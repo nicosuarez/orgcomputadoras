@@ -147,10 +147,7 @@ int main(int argc, char* argv[])
 	      { NULL,           0,  NULL,   0  }
 	  };
 
-	  /* El nombre del fichero que recibe la salida del programa */
-	  const char* fichero_salida = NULL ;
-
-	  int readBytes = 0;
+	  int showBytes = 0;
 
 	  int cantLineas = 10; //Le pongo por default 10 lineas
 
@@ -179,7 +176,7 @@ int main(int argc, char* argv[])
 	              exit(EXIT_SUCCESS);
 
 	          case 'b' : /* -v o --verbose */
-	              readBytes = 1 ;
+	        	  showBytes = 1 ;
 	              break;
 
 	          case 'n' : /* -o ó --output */
@@ -200,7 +197,7 @@ int main(int argc, char* argv[])
 
 	  char* file;
 
-	  if (verbose && optind < argc)
+	  if (optind < argc)
 	  {
 		  //Supuestamente llega al final el nombre de archivo y lo leo.
 	      file = argv[optind++];
@@ -212,7 +209,7 @@ int main(int argc, char* argv[])
 	  }
 
 
-	  if (readBytes){
+	  if (showBytes){
 		  readBytes(file, cantLineas, FIRST_OPTION);
 		  printf("\n****** FIN readBytes FIRST_OPTION ******\n\n");
 
