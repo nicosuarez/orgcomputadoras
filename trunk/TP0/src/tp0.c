@@ -119,19 +119,114 @@ void readBytes(char *path, int bytes, int option)
 	fclose(fd);
 }
 
+const char* nombre_programa;
+
+
+void imprime_uso (){
+    printf("Uso: %s opciones [ argumentos ...] NOMBRE_ARCHIVO\n", nombre_programa);
+    printf("    -h  --help                  Enseña esta ayuda\n"
+           "    -n  --lines lineas          Cantidad de lineas a leer\n"
+           "    -b  --bytes                 Lee la cantidad de bytes en vez de las lineas\n");
+}
+
+
 
 int main(int argc, char* argv[])
 {
-	readLines(argv[1], atoi(argv[2]), FIRST_OPTION);
-	printf("\n****** FIN readFile FIRST_OPTION ******\n\n");
+	int siguiente_opcion;
 
-	readLines(argv[1], atoi(argv[2]), SECOND_OPTION);
-	printf("\n****** FIN readFile SECOND_OPTION ******\n\n");
+	  /* Una cadena que lista las opciones cortas válidas */
+	  const char* const op_cortas = "hbn:" ;
 
-	readBytes(argv[1], atoi(argv[2]), FIRST_OPTION);
-	printf("\n****** FIN readBytes FIRST_OPTION ******\n\n");
+	  /* Una estructura de varios arrays describiendo los valores largos */
+	  const struct option op_largas[] =
+	  {
+	      { "help",         0,  NULL,   'h'},
+	      { "bytes",      0,  NULL,   'b'},
+	      { "lines",       1,  NULL,   'n'},
+	      { NULL,           0,  NULL,   0  }
+	  };
 
-	readBytes(argv[1], atoi(argv[2]), SECOND_OPTION);
-	printf("\n****** FIN readBytes SECOND_OPTION ******\n\n");
+	  /* El nombre del fichero que recibe la salida del programa */
+	  const char* fichero_salida = NULL ;
+
+	  int readBytes = 0;
+
+	  int cantLineas = 10; //Le pongo por default 10 lineas
+
+	  /* Guardar el nombre del programa para incluirlo a la salida */
+	  nombre_programa = argv[0];
+
+	  /* Si se ejecuta sin parámetros ni opciones */
+	  if (argc == 1)
+	  {
+	      imprime_uso();
+	      exit(EXIT_SUCCESS);
+	  }
+
+	  while (1)
+	  {
+	      /* Llamamos a la función getopt */
+	      siguiente_opcion = getopt_long (argc, argv, op_cortas, op_largas, NULL);
+
+	      if (siguiente_opcion == -1)
+	          break; /* No hay más opciones. Rompemos el bucle */
+
+	      switch (siguiente_opcion)
+	      {
+	          case 'h' : /* -h o --help */
+	              imprime_uso();
+	              exit(EXIT_SUCCESS);
+
+	          case 'b' : /* -v o --verbose */
+	              readBytes = 1 ;
+	              break;
+
+	          case 'n' : /* -o ó --output */
+	              cantLineas = atoi(optarg); /* optarg contiene el argumento de -o */
+	              break;
+
+	          case '?' : /* opción no valida */
+	              imprime_uso(); /* código de salida 1 */
+	              exit(1);
+
+	          case -1 : /* No hay más opciones */
+	              break;
+
+	          default : /* Algo más? No esperado. Abortamos */
+	              abort();
+		  }
+	  }
+
+	  char* file;
+
+	  if (verbose && optind < argc)
+	  {
+		  //Supuestamente llega al final el nombre de archivo y lo leo.
+	      file = argv[optind++];
+	  }
+
+	  if (file == ""){
+		  imprime_uso();
+		  exit(1);
+	  }
+
+
+	  if (readBytes){
+		  readBytes(file, cantLineas, FIRST_OPTION);
+		  printf("\n****** FIN readBytes FIRST_OPTION ******\n\n");
+
+		  readBytes(file, cantLineas, SECOND_OPTION);
+		  printf("\n****** FIN readBytes SECOND_OPTION ******\n\n");
+	  } else {
+		readLines(file, cantLineas, FIRST_OPTION);
+		printf("\n****** FIN readFile FIRST_OPTION ******\n\n");
+
+		readLines(file, cantLineas, SECOND_OPTION);
+		printf("\n****** FIN readFile SECOND_OPTION ******\n\n");
+	  }
+
+
+
 	return 0;
 }
