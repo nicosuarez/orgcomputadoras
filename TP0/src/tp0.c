@@ -145,20 +145,21 @@ int main(int argc, char* argv[])
 	int siguiente_opcion;
 
 	  /* Una cadena que lista las opciones cortas válidas */
-	  const char* const op_cortas = "hbn:" ;
+	  const char* const op_cortas = "hb:n:" ;
 
 	  /* Una estructura de varios arrays describiendo los valores largos */
 	  const struct option op_largas[] =
 	  {
 	      { "help",         0,  NULL,   'h'},
-	      { "bytes",      0,  NULL,   'b'},
+	      { "bytes",      1,  NULL,   'b'},
 	      { "lines",       1,  NULL,   'n'},
 	      { NULL,           0,  NULL,   0  }
 	  };
 
-	  int showBytes = 0;
+	  int showBytes = 1;
 
 	  char* cantLineasString = "10"; //Le pongo por default 10 lineas
+	  char* cantBytesString = NULL;
 
 	  /* Guardar el nombre del programa para incluirlo a la salida */
 	  nombre_programa = argv[0];
@@ -184,11 +185,12 @@ int main(int argc, char* argv[])
 	              imprime_uso();
 	              exit(EXIT_SUCCESS);
 
-	          case 'b' : 
-	        	  showBytes = 1 ;
+	          case 'b' : 				  
+				  cantBytesString = optarg;
 	              break;
 
 	          case 'n' : 
+				  showBytes = 0;
 	              cantLineasString = optarg; 
 	              break;
 
@@ -220,6 +222,7 @@ int main(int argc, char* argv[])
 	  int readingOption = FIRST_OPTION;
 
 	  int cantLineas;
+	  int cantBytes;
 
 	  if (cantLineasString[0] == '+'){
 		    readingOption = SECOND_OPTION;
@@ -228,13 +231,23 @@ int main(int argc, char* argv[])
 		    cantLineas = atoi(cantLineasString);
 	  }
 	  
+	  if (cantBytesString != NULL){
+		  if (cantBytesString[0] == '+'){
+				readingOption = SECOND_OPTION;
+				cantBytes = atoi(substr(cantBytesString, 1,0));
+		  } else {
+				cantBytes = atoi(cantBytesString);
+		  }
+	  } else {
+		  showBytes = 0;  
+	  }  
 
 	  if (showBytes){
-		  readBytes(file, cantLineas, readingOption);
-		  //printf("\n****** FIN readBytes FIRST_OPTION ******\n\n");
+		  readBytes(file, cantBytes, readingOption);
+		  printf("\n****** FIN readBytes ******\n\n");
 	  } else {
-		readLines(file, cantLineas, readingOption);
-		//printf("\n****** FIN readFile FIRST_OPTION ******\n\n");
+		  readLines(file, cantLineas, readingOption);
+		  printf("\n****** FIN readFile ******\n\n");
 
 	  }
 
