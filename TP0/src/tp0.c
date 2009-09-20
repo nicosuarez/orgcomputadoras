@@ -129,7 +129,16 @@ void imprime_uso (){
            "    -b  --bytes                 Lee la cantidad de bytes en vez de las lineas\n");
 }
 
-
+char* substr(char* cadena, int comienzo, int longitud)
+{
+	if (longitud == 0) longitud = strlen(cadena)-comienzo-1;
+	
+	char *nuevo = (char*)malloc(sizeof(char) * longitud);
+	
+	strncpy(nuevo, cadena + comienzo, longitud);
+	
+	return nuevo;
+}
 
 int main(int argc, char* argv[])
 {
@@ -149,7 +158,7 @@ int main(int argc, char* argv[])
 
 	  int showBytes = 0;
 
-	  int cantLineas = 10; //Le pongo por default 10 lineas
+	  char* cantLineasString = "10"; //Le pongo por default 10 lineas
 
 	  /* Guardar el nombre del programa para incluirlo a la salida */
 	  nombre_programa = argv[0];
@@ -175,12 +184,12 @@ int main(int argc, char* argv[])
 	              imprime_uso();
 	              exit(EXIT_SUCCESS);
 
-	          case 'b' : /* -v o --verbose */
+	          case 'b' : 
 	        	  showBytes = 1 ;
 	              break;
 
-	          case 'n' : /* -o ó --output */
-	              cantLineas = atoi(optarg); /* optarg contiene el argumento de -o */
+	          case 'n' : 
+	              cantLineasString = optarg; 
 	              break;
 
 	          case '?' : /* opción no valida */
@@ -195,7 +204,7 @@ int main(int argc, char* argv[])
 		  }
 	  }
 
-	  char* file;
+	  char* file = NULL;
 
 	  if (optind < argc)
 	  {
@@ -203,24 +212,30 @@ int main(int argc, char* argv[])
 	      file = argv[optind++];
 	  }
 
-	  if (file == ""){
+	  if (file == NULL){
 		  imprime_uso();
 		  exit(1);
 	  }
 
+	  int readingOption = FIRST_OPTION;
+
+	  int cantLineas;
+
+	  if (cantLineasString[0] == '+'){
+		    readingOption = SECOND_OPTION;
+			cantLineas = atoi(substr(cantLineasString, 1,0));
+	  } else {
+		    cantLineas = atoi(cantLineasString);
+	  }
+	  
 
 	  if (showBytes){
-		  readBytes(file, cantLineas, FIRST_OPTION);
-		  printf("\n****** FIN readBytes FIRST_OPTION ******\n\n");
-
-		  readBytes(file, cantLineas, SECOND_OPTION);
-		  printf("\n****** FIN readBytes SECOND_OPTION ******\n\n");
+		  readBytes(file, cantLineas, readingOption);
+		  //printf("\n****** FIN readBytes FIRST_OPTION ******\n\n");
 	  } else {
-		readLines(file, cantLineas, FIRST_OPTION);
-		printf("\n****** FIN readFile FIRST_OPTION ******\n\n");
+		readLines(file, cantLineas, readingOption);
+		//printf("\n****** FIN readFile FIRST_OPTION ******\n\n");
 
-		readLines(file, cantLineas, SECOND_OPTION);
-		printf("\n****** FIN readFile SECOND_OPTION ******\n\n");
 	  }
 
 
