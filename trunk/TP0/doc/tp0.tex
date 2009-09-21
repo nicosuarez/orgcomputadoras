@@ -1,0 +1,118 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Definición del tipo de documento.                                           %
+% Posibles tipos de papel: a4paper, letterpaper, legalpapper                  %
+% Posibles tamaños de letra: 10pt, 11pt, 12pt                                 %
+% Posibles clases de documentos: article, report, book, slides                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[a4paper,10pt]{article}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Los paquetes permiten ampliar las capacidades de LaTeX.                     %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Paquete para inclusión de gráficos.
+\usepackage{graphicx}
+
+% Paquete para definir la codificación del conjunto de caracteres usado
+% (latin1 es ISO 8859-1).
+\usepackage[latin1]{inputenc}
+
+% Paquete para definir el idioma usado.
+\usepackage[spanish]{babel}
+
+
+% Título principal del documento.
+\title{		\textbf{Trabajo práctico 0: Infraestructura básica}}
+
+% Información sobre los autores.
+\author{		Roberto Herman, \textit{Padrón Nro. 84.803}                     \\
+            \texttt{ berta1108@gmail.com }                                              \\
+            Matías Waisgold, \textit{Padrón Nro. 00.000}                     \\
+            \texttt{ mwaisgold@gmail.com }                                              \\
+            Nicolás Suarez, \textit{Padrón Nro. 00.000}                     \\
+            \texttt{ dirección de e-mail }                                              \\
+            Federico , \textit{Padrón Nro. 00.000}                     \\
+            \texttt{ dirección de e-mail }                                              \\[2.5ex]
+            \normalsize{Grupo Nro. 0 - 2do. Cuatrimestre de 2009}                       \\
+            \normalsize{66.20 Organización de Computadoras}                             \\
+            \normalsize{Facultad de Ingeniería, Universidad de Buenos Aires}            \\
+       }
+\date{}
+
+
+
+\begin{document}
+
+% Inserta el título.
+\maketitle
+
+% Quita el número en la primer página.
+\thispagestyle{empty}
+
+% Resumen
+\begin{abstract}
+El presente trabajo práctico consiste en una introducción a la utilización de la infraestructura utilizada para el desarrollo de los trabajos prácticos de esta materia. La misma será llevada a cabo a través de el desarrollo de una una versión reducida del comando \textbf{tail} de UNIX. El comando será codificado en lenguaje C, y se compilará para funcionar en el emulador de \textbf{MIPS32 NetBsd}.
+\end{abstract}
+
+
+\section{Introducción}
+
+Intro al tp.
+
+
+\section{Diseño e implementación}
+
+\subsection{Módulo principal}
+
+El módulo principal main.c contiene la validación de parámetros de entrada
+y el parseo de los mismos...
+
+\subsection{Parser de líneas}
+
+Bla.
+
+\section{Comandos}
+
+En esta sección se describen los comandos necesarios para la compilación de
+la aplicación.
+
+\subsection{Generando el programa ejecutable}
+
+gcc -Wall -o tp0 main.c parser.c
+
+\subsection{Obteniendo el código MIPS generado por el compilador}
+
+gcc -Wall -O0 -S -mrnames main.c parser.c
+
+\section{Código fuente}
+
+\subsection{Lenguaje C}
+
+\begin{verbatim}
+Acá codigo C.
+\end{verbatim}
+
+\subsection{Lenguaje MIPS}
+
+\begin{verbatim}
+Acá codigo MIPS.
+\end{verbatim}
+
+\section{Corridas de prueba}
+
+Definir qué pruebas vamos a hacer, el enunciado no especifica cuales.
+
+\section{Conclusiones}
+
+Alto chamullo.
+
+
+% Citas bibliográficas.
+\begin{thebibliography}{99}
+
+Aca iría Bibliografia.
+
+\end{thebibliography}
+
+\end{document}
