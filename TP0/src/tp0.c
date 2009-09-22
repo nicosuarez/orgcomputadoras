@@ -97,18 +97,33 @@ void readBytes(char *path, int bytes, int option)
 	sizeFile = ftell(fd);
 	if(option == SECOND_OPTION)
 	{
+		/*aca lo modifique porq me parece q estaba mal apuntado.. avisen
+		 * igual quedo comentado como estaba antes*/
+
 		/*Si la cantidad de bytes a leer es mayor o igual
 		 * al tamaÃ±o del archivo, posiciono al principio sino*/
-		if(bytes >= sizeFile)
+		/*if(bytes >= sizeFile)
 			fseek(fd, 0, SEEK_SET);
 		else
-			fseek(fd, sizeFile - bytes, SEEK_SET);
+			fseek(fd, sizeFile - bytes, SEEK_SET);*/
+
+		/* tiene q empezar a leer en una posicion mayor al tamaÃ±o del archivo
+		 * entonces no lee nada*/
+		if (bytes >= sizeFile)
+			return;
+		else
+			fseek(fd, bytes, SEEK_SET);
 	}
 	else
 	{
-		if(bytes > sizeFile)
+		/* esto tmb me parece q estaba mal */
+
+		/*if(bytes > sizeFile)
 			return;
-		fseek(fd, bytes, SEEK_SET);
+		fseek(fd, bytes, SEEK_SET);*/
+		if (bytes > sizeFile)
+			return;
+		fseek(fd, sizeFile - bytes, SEEK_SET);
 	}
 	buffer = (char) fgetc(fd);
 	while(!feof(fd))
@@ -124,28 +139,73 @@ const char* nombre_programa;
 
 void imprime_uso (){
     printf("Uso: %s opciones [ argumentos ...] NOMBRE_ARCHIVO\n", nombre_programa);
-    printf("    -h  --help                  Enseña esta ayuda\n"
+    printf("    -h  --help                  Enseï¿½a esta ayuda\n"
            "    -n  --lines lineas          Cantidad de lineas a leer\n"
            "    -b  --bytes                 Lee la cantidad de bytes en vez de las lineas\n");
 }
 
+void imprime_version(){
+	printf("Version [66.20] Organizacion de Computadoras\n"
+		   "Segundo Cuatrimestre 2009");
+}
+
+
+
 char* substr(char* cadena, int comienzo, int longitud)
 {
 	if (longitud == 0) longitud = strlen(cadena)-comienzo-1;
-	
+
 	char *nuevo = (char*)malloc(sizeof(char) * longitud);
-	
+
 	strncpy(nuevo, cadena + comienzo, longitud);
-	
+
 	return nuevo;
 }
+
+/*define la cantidad de lineas a leer, y la opcion de lectura*/
+void definirLineas(int siguiente_archivo, int optind, int argc, char* argv[],
+		char* cantLineasString){
+
+		char* file = NULL;
+
+		if (siguiente_archivo == -1)
+			siguiente_archivo = optind;
+		else siguiente_archivo++;
+
+		if (siguiente_archivo < argc){
+			file = argv[siguiente_archivo++];
+		}
+
+		if (file == NULL){
+			imprime_uso();
+	        exit(1);
+	    }
+
+		int readingOption = FIRST_OPTION;
+
+		int cantLineas;
+
+		if (cantLineasString[0] == '+'){
+			readingOption = SECOND_OPTION;
+			cantLineas = atoi(substr(cantLineasString, 1,0));
+			cantLineas++;
+		} else {
+			cantLineas = atoi(cantLineasString);
+			cantLineas++;
+		}
+
+		readLines(file, cantLineas, readingOption);
+
+}
+
+
 
 int main(int argc, char* argv[])
 {
 	int siguiente_opcion;
 
-	  /* Una cadena que lista las opciones cortas válidas */
-	  const char* const op_cortas = "hb:n:" ;
+	  /* Una cadena que lista las opciones cortas vï¿½lidas */
+	  const char* const op_cortas = "hb:n:V" ;
 
 	  /* Una estructura de varios arrays describiendo los valores largos */
 	  const struct option op_largas[] =
@@ -153,6 +213,7 @@ int main(int argc, char* argv[])
 	      { "help",         0,  NULL,   'h'},
 	      { "bytes",      1,  NULL,   'b'},
 	      { "lines",       1,  NULL,   'n'},
+	      { "version",       0,  NULL,   'V'},
 	      { NULL,           0,  NULL,   0  }
 	  };
 
@@ -164,7 +225,10 @@ int main(int argc, char* argv[])
 	  /* Guardar el nombre del programa para incluirlo a la salida */
 	  nombre_programa = argv[0];
 
-	  /* Si se ejecuta sin parámetros ni opciones */
+	  /* Guarda la posicion del siguiente archivo a leer*/
+	  int siguiente_archivo= -1;
+
+	  /* Si se ejecuta sin parï¿½metros ni opciones */
 	  if (argc == 1)
 	  {
 	      imprime_uso();
@@ -173,11 +237,11 @@ int main(int argc, char* argv[])
 
 	  while (1)
 	  {
-	      /* Llamamos a la función getopt */
+	      /* Llamamos a la funciï¿½n getopt */
 	      siguiente_opcion = getopt_long (argc, argv, op_cortas, op_largas, NULL);
 
 	      if (siguiente_opcion == -1)
-	          break; /* No hay más opciones. Rompemos el bucle */
+	          break; /* No hay mï¿½s opciones. Rompemos el bucle */
 
 	      switch (siguiente_opcion)
 	      {
@@ -185,28 +249,40 @@ int main(int argc, char* argv[])
 	              imprime_uso();
 	              exit(EXIT_SUCCESS);
 
+	          case 'V' : /* -V o --version*/
+	        	  imprime_version();
+	        	  exit(EXIT_SUCCESS);
+
 	          case 'b' : 				  
 				  cantBytesString = optarg;
 	              break;
 
 	          case 'n' : 
 				  showBytes = 0;
-	              cantLineasString = optarg; 
+	              cantLineasString = optarg;
+
+	              definirLineas(siguiente_archivo, optind, argc, argv,
+	            			cantLineasString);
 	              break;
 
-	          case '?' : /* opción no valida */
-	              imprime_uso(); /* código de salida 1 */
+	          case '?' : /* opciï¿½n no valida */
+	              imprime_uso(); /* cï¿½digo de salida 1 */
 	              exit(1);
 
-	          case -1 : /* No hay más opciones */
+	          case -1 : /* No hay mï¿½s opciones */
 	              break;
 
-	          default : /* Algo más? No esperado. Abortamos */
+	          default : /* Algo mï¿½s? No esperado. Abortamos */
 	              abort();
 		  }
 	  }
 
-	  char* file = NULL;
+
+
+	  /* ESTO LO DEJE COMENTADO PORQ ME FALTA COMPLETAR
+	   * LA PARTE DE DEFINIR_BYTES()*/
+
+	  /*char* file = NULL;
 
 	  if (optind < argc)
 	  {
@@ -249,7 +325,7 @@ int main(int argc, char* argv[])
 		  readLines(file, cantLineas, readingOption);
 		  printf("\n****** FIN readFile ******\n\n");
 
-	  }
+	  }*/
 
 
 
