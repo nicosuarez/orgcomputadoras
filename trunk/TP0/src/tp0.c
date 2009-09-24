@@ -126,7 +126,7 @@ void imprime_uso (){
     printf("Uso: %s opciones [ argumentos ...] NOMBRE_ARCHIVO\n", nombre_programa);
     printf("    -h  --help                  Muestra esta ayuda y finaliza\n"
            "    -n  --lines lineas          Cantidad de lineas a leer\n"
-           "    -b  --bytes                 Lee la cantidad de bytes en vez de las lineas\n");
+           "    -c  --bytes                 Lee la cantidad de bytes en vez de las lineas\n");
 }
 
 void imprime_version(){
@@ -140,12 +140,12 @@ void definirLineas(int optind, int argc, char* argv[],
 		int cantLineas, int showBytes, int readingOption){
 
 		char* file = NULL;
-		
+
 		/*Las siguiente variables se usan para leer la stdin*/
 		char* tempFile = "temp_tail.txt";
 		char c = '\0';
 		FILE *fd;
-		
+
 		/* Guarda la posicion del siguiente archivo a leer*/
 		int siguiente_archivo = optind;
 
@@ -165,7 +165,7 @@ void definirLineas(int optind, int argc, char* argv[],
 				while(c != EOF)
 				{
 					fputc(c, fd);
-					c = fgetc(stdin); 
+					c = fgetc(stdin);
 				}
 				fclose(fd);
 			}
