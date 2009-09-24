@@ -1,0 +1,17 @@
+Linea 1 Este es el archivo 2
+Linea 2
+Linea 3 A B S D T L C E J H G F P O N M L Z Y W X Q U 
+Linea 4
+Linea 5 Se pide ordenarlo utilizando para ello replacement selection y optimal merge. 
+Linea 6 Realizar el seguimiento del replacement selection (suponiendo memoria para 4 
+Linea 7 registros) para la generacion de particiones ordenadas. Luego de esto, se 
+Linea 8 pide mergear las particiones resultantes utilizando optimal merge (3 vias) 
+Linea 9 indicando cada en cada paso como quedan las particiones. Indicar la cantidad 
+Linea 10 de lecturas de registros que fueron necesarias para la fase de merge. 
+Linea 11
+Linea 12 Ordenar ahora este otro archivo utilizando iguales metodos:
+Linea 13
+Linea 14 Z Y X W U T S Q P O N M L L J H G F E D C B A
+Linea 15
+Linea 16 Comparar los resultados obtenidos en este caso con los del caso anterior.
+Linea 17 Fin archivo 2
