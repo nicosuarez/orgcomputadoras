@@ -140,15 +140,34 @@ void definirLineas(int optind, int argc, char* argv[],
 		int cantLineas, int showBytes, int readingOption){
 
 		char* file = NULL;
-
+		
+		/*Las siguiente variables se usan para leer la stdin*/
+		char* tempFile = "temp_tail.txt";
+		char c = '\0';
+		FILE *fd;
+		
 		/* Guarda la posicion del siguiente archivo a leer*/
 		int siguiente_archivo = optind;
 
-		while(siguiente_archivo < argc)
+		while(siguiente_archivo <= argc)
 		{
 
 			if (siguiente_archivo < argc){
-				file = argv[siguiente_archivo++];
+				file = argv[siguiente_archivo];
+			}
+			else /*Si no se paso un archivo por parametro lee de la stdin*/
+			{
+				if(optind < argc)
+					break;
+				file = tempFile;
+				fd = fopen(file, "wb");
+				c = fgetc(stdin);
+				while(c != EOF)
+				{
+					fputc(c, fd);
+					c = fgetc(stdin); 
+				}
+				fclose(fd);
 			}
 
 			if (file == NULL){
@@ -165,7 +184,10 @@ void definirLineas(int optind, int argc, char* argv[],
 			else
 				readLines(file, cantLineas, readingOption);
 			printf("\n\n");
+			siguiente_archivo++;
 		}
+		if(optind == argc)
+			remove(tempFile);
 }
 
 int main(int argc, char* argv[])
@@ -173,13 +195,13 @@ int main(int argc, char* argv[])
 	  int siguiente_opcion = 0;
 
 	  /* Una cadena que lista las opciones cortas validas */
-	  const char* const op_cortas = "hb:n:V" ;
+	  const char* const op_cortas = "hc:n:V" ;
 
 	  /* Una estructura de varios arrays describiendo los valores largos */
 	  const struct option op_largas[] =
 	  {
 	      { "help",         0,  NULL,   'h'},
-	      { "bytes",      1,  NULL,   'b'},
+	      { "bytes",      1,  NULL,   'c'},
 	      { "lines",       1,  NULL,   'n'},
 	      { "version",       0,  NULL,   'V'},
 	      { NULL,           0,  NULL,   0  }
@@ -214,7 +236,7 @@ int main(int argc, char* argv[])
 	        	  imprime_version();
 	        	  exit(EXIT_SUCCESS);
 
-	          case 'b' :
+	          case 'c' :
 	        	  showBytes = 1;
 	        	  if(optarg[0]=='+')
 	        	  {
