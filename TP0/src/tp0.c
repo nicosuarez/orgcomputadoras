@@ -214,13 +214,6 @@ int main(int argc, char* argv[])
 	  /* Guardar el nombre del programa para incluirlo a la salida */
 	  nombre_programa = argv[0];
 
-	  /* Si se ejecuta sin parametros ni opciones */
-	  if (argc == 1)
-	  {
-	      imprime_uso();
-	      exit(EXIT_SUCCESS);
-	  }
-
 	  while (siguiente_opcion != -1)
 	  {
 	      /* Llamamos a la funcion getopt */
