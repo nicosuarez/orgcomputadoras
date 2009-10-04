@@ -15,7 +15,7 @@ void readLines(char *path, int lines, int option)
 {
 	FILE *fd1, *fd2;
 	int countLines=0;
-	char buffer;
+	char buffer, lastChar;
 
 	fd1 = fopen(path, "r");
 	if(fd1 == NULL)
@@ -60,9 +60,10 @@ void readLines(char *path, int lines, int option)
 				{
 				}
 		}
+		lastChar = buffer;
 		buffer = (char) fgetc(fd1);
 	}
-	if(countLines == lines)
+	if(countLines == lines && lastChar != '\n')
 		while((char)fgetc(fd2) != '\n')
 		{
 		}
@@ -177,13 +178,14 @@ void definirLineas(int optind, int argc, char* argv[],
 
 			/*Si hay mas de un archivo a leer, muestra el nombre del archivo*/
 			if(optind + 1 < argc)
-				printf("==> %s <==\n", file);
+			{
+				printf("\n==> %s <==\n", file);
+			}
 
 			if(showBytes)
 				readBytes(file, cantLineas, readingOption);
 			else
 				readLines(file, cantLineas, readingOption);
-			printf("\n\n");
 			siguiente_archivo++;
 		}
 		if(optind == argc)
