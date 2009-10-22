@@ -13,7 +13,7 @@ int esMayor (char* x, char* y, int num){
 	if (num){
 		return atoi(x) > atoi(y);
 	} else {
-		return strcmp(x , y);
+		return strcmp(x , y) > 0;
 	}
 }
 
