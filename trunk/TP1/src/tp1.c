@@ -1,5 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <getopt.h>
+#include "qsort.c"
+
 
 void ordenar(int *,int,int);
 
@@ -19,7 +23,7 @@ void imprime_uso (){
 
 void imprime_version(){
 	printf("Version [66.20] Organizacion de Computadoras\n"
-		   "Segundo Cuatrimestre 2009");
+		   "Segundo Cuatrimestre 2009\n");
 }
 
 
@@ -83,14 +87,46 @@ int main(int argc, char* argv[]){
 	char* file = NULL;
 	file = argv[optind];
 
+	FILE* fd;
+
 	if (file != NULL){
-		FILE* fd;
-		fd = fopen(path, "r");
+		fd = fopen(file, "r");
 	}
 	else{
 		imprime_uso();
 		exit(1);
 	}
+
+	//pude abrir el archivo, estoy situado en la primer linea
+	int lineas= 1;
+	char buffer;
+
+	while (!feof(fd)){
+		buffer= (char)fgetc(fd);
+		if (buffer == '\n'){
+			lineas++;
+		}
+	}
+
+	char** vector[lineas];
+	char* s;
+
+	fd = fopen(file, "r");
+
+	int i;
+	//recorro de a una las lineas del archivo
+	for(i=0; i<lineas; i++){
+		s= NULL;
+		buffer= (char)fgetc(fd);
+		while(buffer != '\n'){
+			s= strcat(s, &buffer);
+			buffer= (char)fgetc(fd);
+		}
+		vector[i]= &s;
+	}
+
+	quicksort(vector[0], vector[lineas-1], numeric);
+
 
 	//ejemplo
 	/*int N = 7;
