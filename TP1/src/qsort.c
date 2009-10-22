@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void swap(char** a, char** b)
 {
@@ -12,8 +13,7 @@ int esMayor (char* x, char* y, int num){
 	if (num){
 		return atoi(x) > atoi(y);
 	} else {
-
-		return x > y;
+		return strcmp(x , y);
 	}
 }
 
