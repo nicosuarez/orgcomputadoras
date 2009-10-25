@@ -2,10 +2,42 @@
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
-#include "qsort.c"
+#include "qsort.h"
 
+#define MAX 256
 
-void ordenar(int *,int,int);
+//parametros pedidos en el tp son distintos
+void ordenar(int *array,int desde,int hasta)
+{
+	int i,d,aux; // i realiza la búsqueda de izquierda a derecha
+	// y j realiza la búsqueda de derecha a izquierda.
+	if(desde>=hasta)
+	return;
+
+	for(i=desde+1,d=hasta;;) // Valores iniciales de la búsqueda.
+	{
+		for(;i<=hasta && array[i]<=array[desde];i++); // Primera búsqueda
+			for(;d>=0 && array[d]>=array[desde];d--); // segunda búsqueda
+				if(i<d) // si no se han cruzado:
+				{
+					aux=array[i]; // Intercambiar.
+					array[i]=array[d];
+					array[d]=aux;
+				}
+				else // si se han cruzado:
+					break; // salir del bucle.
+	}
+	if(d==desde-1) // Si la segunda búsqueda se sale del array
+		d=desde; // es que el pivote es el elemento
+
+	// más pequeño: se cambia con él mismo.
+	aux=array[d]; // Colocar el pivote
+	array[d]=array[desde]; // en su posición.
+	array[desde]=aux;
+
+	ordenar(array,desde,d-1); // Ordenar el primer array.
+	ordenar(array,d+1,hasta); // Ordenar el segundo array.
+}
 
 void imprime_uso (){
     printf("Usage:\n");
@@ -98,7 +130,7 @@ int main(int argc, char* argv[]){
 	}
 
 	//pude abrir el archivo, estoy situado en la primer linea
-	int lineas= 1;
+	int lineas= 0;
 	char buffer;
 
 	while (!feof(fd)){
@@ -108,78 +140,41 @@ int main(int argc, char* argv[]){
 		}
 	}
 
-	char** vector[lineas];
-	char* s;
+	char** vector = (char**)malloc(sizeof(char*)*lineas);
 
-	fd = fopen(file, "r");
+	fseek(fd, 0, SEEK_SET);
 
-	int i;
+	int i, j;
 	//recorro de a una las lineas del archivo
-	for(i=0; i<lineas; i++){
-		s= NULL;
-		buffer= (char)fgetc(fd);
-		while(buffer != '\n'){
-			s= strcat(s, &buffer);
-			buffer= (char)fgetc(fd);
-		}
-		vector[i]= &s;
-	}
-
-	quicksort(vector[0], vector[lineas-1], numeric);
-
-
-	//ejemplo
-	/*int N = 7;
-	int array[N];
-
-	int i = 0;
-	array[i++] = 1;
-	array[i++] = 7;
-	array[i++] = 8;
-	array[i++] = 256;
-	array[i++] = 5;
-	array[i++] = 4;
-	array[i++] = 10;
-
-	// Dar valores al array
-	ordenar(array,0,N-1); // Para llamar a la función
-
-	for ( i = 0; i < N; i++){
-		printf("%i \n", array[i]);
-	}*/
-
-	return 0;
-}
-
-//parametros pedidos en el tp son distintos
-void ordenar(int *array,int desde,int hasta)
-{
-	int i,d,aux; // i realiza la búsqueda de izquierda a derecha
-	// y j realiza la búsqueda de derecha a izquierda.
-	if(desde>=hasta)
-	return;
-
-	for(i=desde+1,d=hasta;;) // Valores iniciales de la búsqueda.
+	for(i=0; i<lineas; i++)
 	{
-		for(;i<=hasta && array[i]<=array[desde];i++); // Primera búsqueda
-			for(;d>=0 && array[d]>=array[desde];d--); // segunda búsqueda
-				if(i<d) // si no se han cruzado:
-				{
-					aux=array[i]; // Intercambiar.
-					array[i]=array[d];
-					array[d]=aux;
-				}
-				else // si se han cruzado:
-					break; // salir del bucle.
+		vector[i] = (char*)malloc(sizeof(char)*MAX);
+		buffer= (char)fgetc(fd);
+		j=0;
+		while(buffer != '\n' && j<MAX-1)
+		{
+			vector[i][j] = buffer;
+			buffer= (char)fgetc(fd);
+			j++;
+		}
+		vector[i][j] = '\0';
 	}
-	if(d==desde-1) // Si la segunda búsqueda se sale del array
-		d=desde; // es que el pivote es el elemento
 
-	// más pequeño: se cambia con él mismo.
-	aux=array[d]; // Colocar el pivote
-	array[d]=array[desde]; // en su posición.
-	array[desde]=aux;
+	printf("Antes de ordenar:\n");
+	for(i=0; i<lineas; i++)
+	{
+		printf("%s\n", vector[i]);
+	}
 
-	ordenar(array,desde,d-1); // Ordenar el primer array.
-	ordenar(array,d+1,hasta); // Ordenar el segundo array.
+	quicksort(&vector[0], &vector[lineas-1], numeric);
+
+	printf("\nDespues de ordenar:\n");
+	for(i=0; i<lineas; i++)
+	{
+		printf("%s\n", vector[i]);
+		free(vector[i]);
+	}
+	free(vector);
+	fclose(fd);
+	return 0;
 }
