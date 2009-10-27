@@ -20,7 +20,15 @@ qsort:
 	slt	$t2,$t0,$t1 #der<izq seteo t0
 	bne	$t2,$zero,while1 #si no se cumple esa condicion sigo y me meto en el while
 	
+	#¿¿aca no habria que setear $ra para que el "j" de swap nos
+	#lleve a las llamadas recursivas??
+
 	#aca swap
+swap:
+	move	$t7,$a0
+	move 	$a0,$a1
+	move 	$a1,$t7
+	j	$ra #retorno
 	
 	#aca las 2 llamadas recursivas
 	addu	$t3,$t1,-1
@@ -69,14 +77,28 @@ while1:
 	#fin while(ult>pri-1 && esMayor(*ult,pivot,num))
 	
 	slt	$t3,$t0,$t1 #pri<ult
-	#aca swap
-	
-	slt	$t3,$t2,$t1 #pri<ult 
+	beq	$t3,$zero,noswap #si ult>pri no hago el swap
+	#aca llamada a swap
+	lw	$a0,$t0
+	lw	$a1,$t1
+	la	$t9,swap
+	jal	$ra,$t9
+	move	$t0,$a0
+	move 	$t1,$a1
+
+noswap:
+	slt	$t3,$t2,$t1 #pri<ult
 	bne	$t3,$zero,while
 	
 	#fin while (pri<ult)
 	
 	#aca llamada a swap
+	lw	$a0,56($fp)
+	lw	$a1,$t0
+	la	$t9,swap
+	jal	$ra,$t9
+	move	$t0,$a0
+	move 	$t1,$a1
 
 while2: 
 	addu 	$t0,$t0,1
