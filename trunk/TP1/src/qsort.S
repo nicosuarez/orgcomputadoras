@@ -24,11 +24,6 @@ qsort:
 	#lleve a las llamadas recursivas??
 
 	#aca swap
-swap:
-	move	$t7,$a0
-	move 	$a0,$a1
-	move 	$a1,$t7
-	j	$ra #retorno
 	
 	#aca las 2 llamadas recursivas
 	addu	$t3,$t1,-1
@@ -79,26 +74,22 @@ while1:
 	slt	$t3,$t0,$t1 #pri<ult
 	beq	$t3,$zero,noswap #si ult>pri no hago el swap
 	#aca llamada a swap
-	lw	$a0,$t0
-	lw	$a1,$t1
-	la	$t9,swap
-	jal	$ra,$t9
-	move	$t0,$a0
-	move 	$t1,$a1
+	move	$t7,$t0
+	move 	$t0,$t1
+	move 	$t1,$t7
 
 noswap:
-	slt	$t3,$t2,$t1 #pri<ult
+	slt	$t3,$t0,$t1 #pri<ult
 	bne	$t3,$zero,while
 	
 	#fin while (pri<ult)
 	
 	#aca llamada a swap
-	lw	$a0,56($fp)
-	lw	$a1,$t0
-	la	$t9,swap
-	jal	$ra,$t9
-	move	$t0,$a0
-	move 	$t1,$a1
+	lw	$t9,56($fp)
+	move	$t7,$t0
+	move 	$t0,$t9
+	move 	$t9,$t7
+	#aca habria que hacer un store de izq??
 
 while2: 
 	addu 	$t0,$t0,1
