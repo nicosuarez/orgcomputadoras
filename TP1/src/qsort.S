@@ -73,7 +73,7 @@ while1:
 
 	slt	t4,t0,t3 #pri<ult+1
 
-	la	t9,vueltaComparacionIzq
+	la	t9,vueltaComparacionIzq #RH: no entiendo para que esto, vueltaComparacionIzq no es una funcion
 	beq	a2,zero,comparaIzquierdaPivot
 	bne	a2,zero,comparaIzquierdaPivotInt
 
@@ -88,7 +88,7 @@ vueltaComparacionIzq:
 	addu	t3,t0,-1
 	slt	t4,t3,t1 #ult>pri-1
 
-	la	t9,vueltaComparacionDer
+	la	t9,vueltaComparacionDer #RH: idem anterior
 	beq	a2,zero,comparaDerechaPivot
 	bne	a2,zero,comparaDerechaPivotInt
 
@@ -113,7 +113,8 @@ vueltaComparacionDer:
 comparaIzquierdaPivotInt:
 
 	slt	t5,t0,t8 #pri mayor a pivot (negado)
-	#b	vueltaComparacionIzq	
+	#b	vueltaComparacionIzq #RH: no entiendo porque sacaron este b, sin eso hace el es mayor con izq
+	                             #y despues sigue abajo y entra al comparaDerechaPivot, haciendo el es mayor con der.
 
 comparaDerechaPivotInt:	
 
@@ -212,12 +213,12 @@ salir:
         addu    sp,sp,24
         j       ra
 
-iniciaComparacionIzquierdaPivot:
-	lw	t7,a0
+iniciaComparacionIzquierdaPivot: #RH: este label corresponde a qsort? o a stringToInt? no veo que nadie haga un branch a este label
+	lw	t7,a0 #RH: esto esta mal, se asigna dir de memoria del lado derecho, no se puede poner un registro
 	lw	t8,t0	
 	#b	comparacionIzquierdaPivot
 
-comparacionCharPivot:
+comparacionCharPivot: #RH: este label corresponde a qsort? o a stringToInt? no veo que nadie haga un branch a este label
 	bne	t7,finDeCadena, asignoMayor
 	beq	t8,finDeCadena, asignoMayor
 	slt 	t6,t7,t8
@@ -226,8 +227,8 @@ comparacionCharPivot:
 	addi	t8,t8,4
 	b	comparaIzquierdaPivot
 	
-iniciaComparacionDerechaPivot:
-	lw	t7,a0
+iniciaComparacionDerechaPivot: #RH: este label corresponde a qsort? o a stringToInt? no veo que nadie haga un branch a este label
+	lw	t7,a0 #esto esta mal, se asigna dir de memoria del lado derecho, no se puede poner un registro
 	lw	t8,t1
 	b	comparacionCharPivot
 	
