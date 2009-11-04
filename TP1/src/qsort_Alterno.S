@@ -113,7 +113,7 @@ esMayor:
 	lw 	$t0,24($sp)
 	lw 	$t1,28($sp)
 	
-	sw $zero,12($fp) #subindice para recorrer los string
+	sw 	$zero,12($fp) #subindice para recorrer los string
 	
 	beq     $a2,$zero,esMayorChars
 	
@@ -172,11 +172,8 @@ t1menor:
 	li $v0,0
 	b finEsMayor
 
-
 #x (t0) menor--> 1 en $v0
 #y (t1) menor--> 0 en $v0
-
-	j finEsMayor
 	
 finEsMayor: #se llama cuando termina la comparacion (sea de ints o chars)
 	move    $sp,$fp
