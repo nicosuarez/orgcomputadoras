@@ -68,7 +68,7 @@ while1:
 
 	slt	$t4,$t0,$t3 #pri<ult+1
 
-	la	$t9,vueltaComparacionIzq
+	la	$t9,vueltaComparacionIzq #RH: no entiendo porque esto
 	beq	$a2,$zero,comparaIzquierdaPivot
 	bne	$a2,$zero,comparaIzquierdaPivotInt
 
@@ -83,7 +83,7 @@ vueltaComparacionIzq:
 	addu	$t3,$t0,-1
 	slt	$t4,$t3,$t1 #ult>pri-1
 
-	la	$t9,vueltaComparacionDer
+	la	$t9,vueltaComparacionDer #RH: no entiendo porque esto
 	beq	$a2,$zero,comparaDerechaPivot
 	bne	$a2,$zero,comparaDerechaPivotInt
 
