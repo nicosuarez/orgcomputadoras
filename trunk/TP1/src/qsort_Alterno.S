@@ -110,6 +110,9 @@ esMayor:
 	sw	$a1,28($sp)
 	sw	$a2,32($sp)
 	
+	lw 	$t0,24($sp)
+	lw 	$t1,28($sp)
+	
 	beq     $a2,$zero,esMayorChars
 	
 esMayorInt: #este castea a int y compara
@@ -130,9 +133,40 @@ esMayorInt: #este castea a int y compara
 	
 	b	finEsMayor
 	
-esMayorChars: #falta completar esto, por ahora no hace nada
-	
-	b	finEsMayor
+esMayorChars:
+	lbu $t3,0($t0) #agregue esto porque sino comparabamos dir de memoria en vez de bytes
+	lbu $t4,0($t1)
+	#si alguno es '\0' lo asignamos como menor
+	beq $t3,finDeCadena,t0menor
+	beq $t4,finDeCadena,t1menor
+
+	#$t0 es menor
+	slt $v0,$t3,$t4
+	bne $v0,$zero,finEsMayor
+
+	#$t1 es menor
+	slt $v0,$t4,$t3
+	bne $v0,$zero,t1menor
+
+	#si llegamos aca es porq los 2 caracteres son iguales
+	#hay que pasar a la siguiente posicion, y volver a llamar a esMayorChars
+	addi $t0,$t0,1 #no se si esto esta bien.
+	addi $t1,$t1,1
+	j esMayorChars
+
+t0menor:
+	li $v0,1
+	b finEsMayor
+
+t1menor:
+	li $v0,0
+	b finEsMayor
+
+
+#x (t0) menor--> 1 en $v0
+#y (t1) menor--> 0 en $v0
+
+	j finEsMayor
 	
 finEsMayor: #se llama cuando termina la comparacion (sea de ints o chars)
 	move    $sp,$fp
