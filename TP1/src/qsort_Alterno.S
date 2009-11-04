@@ -16,7 +16,6 @@ qsort:
 	
 	lw	$t0,56($fp)	# pri
 	lw	$t1,60($fp)	# ult
-	lw	$t8,68($fp)
 	
 	slt 	$t2,$t0,$t1 #der<izq seteo t2
 	bne	$t2,$zero,qsortEnd
@@ -30,7 +29,7 @@ while2:
 	#inicio while(pri<ult+1 && !esMayor(*pri,pivot,num))
 	addu	$t3,$t1,1
 	
-	slt	$t4,$t0,$t3 #pri<ult+1
+	sge	$t4,$t0,$t3 #pri<ult+1 (negado)
 	
 	lw      $a0,56($fp) #pri
 	lw	$a1,68($fp) #pivot
@@ -38,8 +37,8 @@ while2:
 	la 	$t9,esMayor
 	jal	$t9
 	
-	addu	$t6,$t4,$v0 #esto es el &&
-	beq	$t6,$zero,while3
+	addu	$t6,$t4,$v0 #esto es el && tienen que dar los dos 0
+	bne	$t6,$zero,while3
 	addi    $t6,$t0,1 #pri++
 	move    $t0,$t6
 	j	while2	
@@ -48,7 +47,7 @@ while3:
 	#inicio while(ult>pri-1 && esMayor(*ult,pivot,num))
 	addu	$t3,$t0,-1
 
-	slt	$t4,$t3,$t1 #ult>pri-1
+	slt  	$t4,$t3,$t1 #ult>pri-1
 	
 	lw      $a0,60($fp) #pri
 	lw	$a1,68($fp) #pivot
@@ -56,8 +55,8 @@ while3:
 	la 	$t9,esMayor
 	jal	$t9
 
-	addu	$t6,$t4,$v0 #esto es el &&
-	beq	$t6,$zero,if
+	addu	$t6,$t4,$v0 #esto es el && tienen que dar los dos 1 (2 en total)
+	bne	$t6,2,if
 	addi    $t6,$t1,-1 #ult--
 	move    $t1,$t6 #guardo el ult
 	j	while3
@@ -100,7 +99,7 @@ qsortEnd:
 	lw	$fp,44($sp)
 	addu	$sp,$sp,56
 	j	$ra
-	
+	.end    qsort
 #-------------------------------Funcion es mayor---------------------------#	
 esMayor:
 	subu	$sp,$sp,24
@@ -132,6 +131,7 @@ esMayorInt: #este castea a int y compara
 	b	finEsMayor
 	
 esMayorChars: #falta completar esto, por ahora no hace nada
+	
 	b	finEsMayor
 	
 finEsMayor: #se llama cuando termina la comparacion (sea de ints o chars)
