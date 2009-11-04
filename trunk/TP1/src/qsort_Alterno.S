@@ -113,6 +113,8 @@ esMayor:
 	lw 	$t0,24($sp)
 	lw 	$t1,28($sp)
 	
+	sw $zero,12($fp) #subindice para recorrer los string
+	
 	beq     $a2,$zero,esMayorChars
 	
 esMayorInt: #este castea a int y compara
@@ -134,11 +136,19 @@ esMayorInt: #este castea a int y compara
 	b	finEsMayor
 	
 esMayorChars:
-	lbu $t3,0($t0) #agregue esto porque sino comparabamos dir de memoria en vez de bytes
-	lbu $t4,0($t1)
+	lw $t5,0($t0) #levanto en $t3 el char del primer string
+	lw $t3,12($fp)
+	addu $t3,$t5,$t3
+	lbu $t3,0($t3) 
+	
+	lw $t5,0($t1) #levanto en $t4 el char del segundo string
+	lw $t4,12($fp)
+	addu $t4,$t5,$t4	
+	lbu $t4,0($t4)
+	
 	#si alguno es '\0' lo asignamos como menor
-	beq $t3,finDeCadena,t0menor
-	beq $t4,finDeCadena,t1menor
+	beq $t3,$zero,t0menor
+	beq $t4,$zero,t1menor
 
 	#$t0 es menor
 	slt $v0,$t3,$t4
@@ -149,9 +159,9 @@ esMayorChars:
 	bne $v0,$zero,t1menor
 
 	#si llegamos aca es porq los 2 caracteres son iguales
-	#hay que pasar a la siguiente posicion, y volver a llamar a esMayorChars
-	addi $t0,$t0,1 #no se si esto esta bien.
-	addi $t1,$t1,1
+	lw $t5,12($fp) #aumento el subindice  
+	addu $t5,$t5,1
+	sw $t5,12($fp)	
 	j esMayorChars
 
 t0menor:
