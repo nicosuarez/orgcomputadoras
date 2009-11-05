@@ -143,7 +143,7 @@ esMayorInt: #este castea a int y compara
 	lw	t0,48($fp) #cargo los 2 ints convertidos para comparar
 	lw	t1,52($fp)
 	
-	slt	v0,t0,t1 
+	slt	v0,t1,t0 
 	
 	b	finEsMayor
 	
@@ -177,11 +177,11 @@ esMayorChars:
 	j 	esMayorChars
 
 t0menor:
-	li      v0,1
+	li      v0,0
 	b 	finEsMayor
 
 t1menor:
-	li 	v0,0
+	li 	v0,1
 	b 	finEsMayor
 
 #x (t0) menor--> 1 en $v0
