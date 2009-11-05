@@ -73,6 +73,8 @@ if:
 	move	t7,t0
 	move 	t0,t1
 	move 	t1,t7
+	sw	t0,4($fp)
+	sw	t1,8($fp)
 	#fin swap
 	j	while1
 
@@ -82,6 +84,7 @@ qsortContinuation: #esta es la seccion que hace el swap y las llamadas recursiva
 	lw	t4,60($fp)
 	move 	t1,t4
 	sw	t7,60($fp)
+	sw	t4,8($fp)
 	#fin swap
 
 	#aca las 2 llamadas recursivas
