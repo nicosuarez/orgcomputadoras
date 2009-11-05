@@ -12,11 +12,14 @@ quickSort:
 	sw	a0,56($fp) #izq
 	sw	a1,60($fp) #der
 	sw	a2,64($fp) #num
-	sw	a0,68($fp) # pivot
+	
 
 	lw	t0,56($fp)	# pri
+	sw	t0,4($fp)
 	lw	t1,60($fp)	# ult
-
+	sw	t1,8($fp)
+	sw	a0,12($fp) 	# pivot
+	
 	slt 	t2,t1,t0 #der<izq seteo t2
 	bne	t2,zero,qsortEnd
 
@@ -31,8 +34,8 @@ while2:
 
 	sge	t4,t0,t3 #pri<ult+1 (negado)
 
-	lw  	a0,56($fp) #pri
-	lw	a1,68($fp) #pivot
+	lw  	a0,4($fp) #pri
+	lw	a1,12($fp) #pivot
 			    #a2 no lo cargo, siempre vale lo mismo
 	la 	t9,esMayor
 	jalr	t9
@@ -41,6 +44,7 @@ while2:
 	bne	t6,zero,while3
 	addi    t6,t0,1 #pri++
 	move    t0,t6
+	sw	t0,4($fp)
 	j	while2
 
 while3:
@@ -49,8 +53,8 @@ while3:
 
 	slt  	t4,t3,t1 #ult>pri-1
 
-	lw      a0,60($fp) #pri
-	lw	a1,68($fp) #pivot
+	lw      a0,8($fp) #pri
+	lw	a1,12($fp) #pivot
 			    #a2 no lo cargo, siempre vale lo mismo
 	la 	t9,esMayor
 	jalr	t9
@@ -59,6 +63,7 @@ while3:
 	bne	t6,2,if
 	addi    t6,t1,-1 #ult--
 	move    t1,t6 #guardo el ult
+	sw	t1,8($fp)
 	j	while3
 
 if:
@@ -101,33 +106,35 @@ qsortEnd:
 	j	ra
 	.end    quickSort
 #-------------------------------Funcion es mayor---------------------------#	
+	.globl esMayor
 esMayor:
-	subu	$sp,$sp,48
-	sw	$ra,40($sp)
-	sw	$fp,36($sp)
-	sw	$gp,32($sp)
-	move    $fp,$sp
-	sw	$a0,48($fp)
-	sw	$a1,52($fp)
-	sw	$a2,56($fp)
+	subu	sp,sp,48
+	sw	ra,40(sp)
+	sw	$fp,36(sp)
+	sw	gp,32(sp)
+	move    $fp,sp
+	sw	a0,48($fp)
+	sw	a1,52($fp)
+	sw	a2,56($fp)
 	
-	lw 	$t0,48($fp)
-	lw 	$t1,52($fp)
+	lw 	t0,48($fp)
+	lw 	t1,52($fp)
 	
-	sw 	$zero,12($fp) #subindice para recorrer los string
-	
-	beq     $a2,$zero,esMayorChars
+	sw	t0,8($fp)
+	sw 	zero,12($fp) #subindice para recorrer los string
+	sw	t1,16($fp)
+
+	beq     a2,zero,esMayorChars
 	
 esMayorInt: #este castea a int y compara
-	lw	a0,48($fp) #cargo argumentos para castToInt
-	la 	t9,stringToInt
-	jalr	t9
+	lw	a0,8($fp) #cargo argumentos para castToInt
+	la 	t7,stringToInt
+	jalr	t7
 	sw	v0,48($fp)
 	
-	lw	a0,52($fp) #cargo argumentos para castToInt
-	la 	t9,stringToInt
-	lw	ra,40($fp) #ACA RECUPERO EL ra INICIAL
-	jalr	t9
+	lw	a0,16($fp) #cargo argumentos para castToInt
+	la 	t7,stringToInt
+	jalr	t7
 	sw	v0,52($fp)
 	
 	lw	t0,48($fp) #cargo los 2 ints convertidos para comparar
@@ -138,27 +145,27 @@ esMayorInt: #este castea a int y compara
 	b	finEsMayor
 	
 esMayorChars:
-	lw 	t5,0(t0) #levanto en $t3 el char del primer string
+	lw 	t5,8($fp) #levanto en $t3 el char del primer string
 	lw 	t3,12($fp)
 	addu 	t3,t5,t3
 	lbu 	t3,0(t3) 
 	
-	lw 	t5,0(t1) #levanto en $t4 el char del segundo string
+	lw 	t5,8($fp) #levanto en $t4 el char del segundo string
 	lw 	t4,12($fp)
 	addu 	t4,t5,t4	
 	lbu 	t4,0(t4)
 	
 	#si alguno es '\0' lo asignamos como menor
-	beq 	t3,$zero,t0menor
-	beq 	t4,$zero,t1menor
+	beq 	t3,zero,t0menor
+	beq 	t4,zero,t1menor
 
 	#$t0 es menor
 	slt 	v0,t3,t4
-	bne 	v0,$zero,finEsMayor
+	bne 	v0,zero,finEsMayor
 
 	#$t1 es menor
 	slt 	v0,t4,t3
-	bne 	v0,$zero,t1menor
+	bne 	v0,zero,t1menor
 
 	#si llegamos aca es porq los 2 caracteres son iguales
 	lw 	t5,12($fp) #aumento el subindice  
@@ -179,7 +186,8 @@ t1menor:
 	
 finEsMayor: #se llama cuando termina la comparacion (sea de ints o chars)
 	move    sp,$fp
-        lw      $fp,20(sp)
+	lw	ra,40(sp)
+        lw      $fp,36(sp)
         addu    sp,sp,48
         jr      ra
 #-------------------------------Funcion es mayor---------------------------#
