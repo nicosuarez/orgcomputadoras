@@ -155,11 +155,11 @@ esMayorChars:
     slt     v0,t3,t4
     bne     v0,zero,finEsMayor
 
-    #$t1 es menor
+    	#$t1 es menor
     slt     v0,t4,t3
     bne     v0,zero,t1menor
 
-    #si llegamos aca es porq los 2 caracteres son iguales
+	#si llegamos aca es porq los 2 caracteres son iguales
     lw     t5,12($fp) #aumento el subindice  
     addu     t5,t5,1
     sw     t5,12($fp)    
@@ -178,51 +178,51 @@ t1menor:
     
 finEsMayor: #se llama cuando termina la comparacion (sea de ints o chars)
     move    sp,$fp
-        lw      $fp,20(sp)
-        addu    sp,sp,48
-        jr      ra
+    lw      $fp,20(sp)
+    addu    sp,sp,48
+    jr      ra
 #-------------------------------Funcion es mayor---------------------------#
 #-------------------------------Funcion stringToInt---------------------------#
     .globl stringToInt
 
 stringToInt:
-        subu    sp,sp,24
-        sw      $fp,20(sp)
-        sw      gp,16(sp)
-        move    $fp,sp
-        sw      a0,24($fp)
-        sw      zero,8($fp)
-        sw      zero,12($fp)
+    subu    sp,sp,24
+    sw      $fp,20(sp)
+    sw      gp,16(sp)
+    move    $fp,sp
+    sw      a0,24($fp)
+    sw      zero,8($fp)
+    sw      zero,12($fp)
 while:
-        lw      v1,24($fp)
-        lw      v0,8($fp)
-        addu    v0,v1,v0
-        lb      v0,0(v0)
-        beq     v0,zero,salir
-        lw      v1,12($fp)
-        move    v0,v1
-        sll     v0,v0,2   #multiplicacion por 10
-        addu    v0,v0,v1
-        sll     v0,v0,1
-        sw      v0,12($fp)
-        lw      v1,24($fp)
-        lw      v0,8($fp)
-        addu    v0,v1,v0
-        lb      v1,0(v0)
-        lw      v0,12($fp)
-        addu    v0,v1,v0
-        addu    v0,v0,-48
-        sw      v0,12($fp)
-        lw      v0,8($fp)
-        addu    v0,v0,1
-        sw      v0,8($fp)
-        b       while
+    lw      v1,24($fp)
+    lw      v0,8($fp)
+    addu    v0,v1,v0
+    lb      v0,0(v0)
+    beq     v0,zero,salir
+    lw      v1,12($fp)
+    move    v0,v1
+    sll     v0,v0,2   #multiplicacion por 10
+    addu    v0,v0,v1
+    sll     v0,v0,1
+    sw      v0,12($fp)
+    lw      v1,24($fp)
+    lw      v0,8($fp)
+    addu    v0,v1,v0
+    lb      v1,0(v0)
+    lw      v0,12($fp)
+    addu    v0,v1,v0
+    addu    v0,v0,-48
+    sw      v0,12($fp)
+    lw      v0,8($fp)
+    addu    v0,v0,1
+    sw      v0,8($fp)
+    b       while
 salir:
-        lw      v0,12($fp)
-        move    sp,$fp
-        lw      $fp,20(sp)
-        addu    sp,sp,24
-        jr      ra
+    lw      v0,12($fp)
+    move    sp,$fp
+    lw      $fp,20(sp)
+    addu    sp,sp,24
+    jr      ra
 #-------------------------------Funcion stringToInt---------------------------#
 
 #calculo tamanio stack frame:
