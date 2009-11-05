@@ -31,7 +31,7 @@ while2:
 
 	sge	t4,t0,t3 #pri<ult+1 (negado)
 
-	lw  a0,56($fp) #pri
+	lw  	a0,56($fp) #pri
 	lw	a1,68($fp) #pivot
 			    #a2 no lo cargo, siempre vale lo mismo
 	la 	t9,esMayor
@@ -119,68 +119,69 @@ esMayor:
 	beq     $a2,$zero,esMayorChars
 	
 esMayorInt: #este castea a int y compara
-	lw	$a0,48($fp) #cargo argumentos para castToInt
-	la 	$t9,stringToInt
-	jal	$ra,$t9
-	sw	$v0,48($fp)
+	lw	a0,48($fp) #cargo argumentos para castToInt
+	la 	t9,stringToInt
+	jal	ra,t9
+	sw	v0,48($fp)
 	
-	lw	$a1,52($fp) #cargo argumentos para castToInt
-	la 	$t9,stringToInt
-	jal	$ra,$t9
-	sw	$v0,52($fp)
+	lw	a1,52($fp) #cargo argumentos para castToInt
+	la 	t9,stringToInt
+	lw	ra,40($fp) #ACA RECUPERO EL ra INICIAL
+	jal	ra,t9
+	sw	v0,52($fp)
 	
-	lw	$t0,48($fp) #cargo los 2 ints convertidos para comparar
-	lw	$t1,52($fp)
+	lw	t0,48($fp) #cargo los 2 ints convertidos para comparar
+	lw	t1,52($fp)
 	
-	slt	$v0,$t0,$t1 
+	slt	v0,t0,t1 
 	
 	b	finEsMayor
 	
 esMayorChars:
-	lw $t5,0($t0) #levanto en $t3 el char del primer string
-	lw $t3,12($fp)
-	addu $t3,$t5,$t3
-	lbu $t3,0($t3) 
+	lw 	t5,0(t0) #levanto en $t3 el char del primer string
+	lw 	t3,12($fp)
+	addu 	t3,t5,t3
+	lbu 	t3,0(t3) 
 	
-	lw $t5,0($t1) #levanto en $t4 el char del segundo string
-	lw $t4,12($fp)
-	addu $t4,$t5,$t4	
-	lbu $t4,0($t4)
+	lw 	t5,0(t1) #levanto en $t4 el char del segundo string
+	lw 	t4,12($fp)
+	addu 	t4,t5,t4	
+	lbu 	t4,0(t4)
 	
 	#si alguno es '\0' lo asignamos como menor
-	beq $t3,$zero,t0menor
-	beq $t4,$zero,t1menor
+	beq 	t3,$zero,t0menor
+	beq 	t4,$zero,t1menor
 
 	#$t0 es menor
-	slt $v0,$t3,$t4
-	bne $v0,$zero,finEsMayor
+	slt 	v0,t3,t4
+	bne 	v0,$zero,finEsMayor
 
 	#$t1 es menor
-	slt $v0,$t4,$t3
-	bne $v0,$zero,t1menor
+	slt 	v0,t4,t3
+	bne 	v0,$zero,t1menor
 
 	#si llegamos aca es porq los 2 caracteres son iguales
-	lw $t5,12($fp) #aumento el subindice  
-	addu $t5,$t5,1
-	sw $t5,12($fp)	
-	j esMayorChars
+	lw 	t5,12($fp) #aumento el subindice  
+	addu 	t5,t5,1
+	sw 	t5,12($fp)	
+	j 	esMayorChars
 
 t0menor:
-	li $v0,1
-	b finEsMayor
+	li      v0,1
+	b 	finEsMayor
 
 t1menor:
-	li $v0,0
-	b finEsMayor
+	li 	v0,0
+	b 	finEsMayor
 
 #x (t0) menor--> 1 en $v0
 #y (t1) menor--> 0 en $v0
 	
 finEsMayor: #se llama cuando termina la comparacion (sea de ints o chars)
-	move    $sp,$fp
-        lw      $fp,20($sp)
-        addu    $sp,$sp,24
-        j       $ra
+	move    sp,$fp
+        lw      $fp,20(sp)
+        addu    sp,sp,48
+        jr      ra
 #-------------------------------Funcion es mayor---------------------------#
 #-------------------------------Funcion stringToInt---------------------------#
 stringToInt:
@@ -220,7 +221,7 @@ salir:
         move    sp,$fp
         lw      $fp,20(sp)
         addu    sp,sp,24
-        j       ra
+        jr      ra
 #-------------------------------Funcion stringToInt---------------------------#
 
 #calculo tamanio stack frame:
