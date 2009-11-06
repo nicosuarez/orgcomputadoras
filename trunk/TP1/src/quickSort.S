@@ -4,6 +4,7 @@
 
 quickSort:
 	subu 	sp,sp,56 	#Armo stack de 56 bytes:
+	
 	sw	ra,48(sp)
 	sw	$fp,44(sp)
 	sw	gp,40(sp)
@@ -13,14 +14,14 @@ quickSort:
 	sw	a1,60($fp) #der
 	sw	a2,64($fp) #num
 	
-
-	lw	t0,56($fp)	# pri
-	sw	t0,4($fp)
-	lw	t1,60($fp)	# ult
-	sw	t1,8($fp)
-	sw	a0,12($fp) 	# pivot
+	move	s3,a0   # izq
+	move	s4,a1	# der
 	
-	slt 	t2,t1,t0 #der<izq seteo t2
+	move	s0,a1 # pivot
+	move	s1,a0 #pri
+	move	s2,a1 #ult
+
+	slt 	t2,s4,s3 #der<izq seteo t2
 	bne	t2,zero,qsortEnd
 
 while1:
@@ -30,75 +31,65 @@ while2:
 	#inicio while (pri<ult)
 
 	#inicio while(pri<ult+1 && !esMayor(*pri,pivot,num))
-	addu	t3,t1,1
+	addu	t3,s2,4
 
-	sge	t4,t0,t3 #pri<ult+1 (negado)
+	sge	t4,s1,t3 #pri<ult+1 (negado)
 
-	lw  	a0,4($fp) #pri
-	lw	a1,12($fp) #pivot
+	move  	a0,s1 #pri
+	move	a1,s0
 			    #a2 no lo cargo, siempre vale lo mismo
-	la 	t9,esMayor
-	jalr	t9
+	jal	esMayor
 
 	addu	t6,t4,v0 #esto es el && tienen que dar los dos 0
 	bne	t6,zero,while3
-	addi    t6,t0,1 #pri++
-	move    t0,t6
-	sw	t0,4($fp)
+	add     s1,s1,4 #pri++
 	j	while2
 
 while3:
 	#inicio while(ult>pri-1 && esMayor(*ult,pivot,num))
-	addu	t3,t0,-1
+	subu	t3,s1,4
 
-	slt  	t4,t3,t1 #ult>pri-1
+	slt  	t4,t3,s2 #ult>pri-1
 
-	lw      a0,8($fp) #pri
-	lw	a1,12($fp) #pivot
-			    #a2 no lo cargo, siempre vale lo mismo
-	la 	t9,esMayor
-	jalr	t9
+	move    a0,s2 #ult
+	move	a1,s0
+		    #a2 no lo cargo, siempre vale lo mismo
+	jal	esMayor
 
 	addu	t6,t4,v0 #esto es el && tienen que dar los dos 1 (2 en total)
 	bne	t6,2,if
-	addi    t6,t1,-1 #ult--
-	move    t1,t6 #guardo el ult
-	sw	t1,8($fp)
+	subu    s2,s2,4 #ult--
 	j	while3
 
 if:
-	slt	t3,t0,t1 #pri<ult
+	slt	t3,s1,s2 #pri<ult
 	beq	t3,zero,while1 #si ult>pri no hago el swap y me voy al while 1 para chequear la condicion
 	#inicio swap
-	move	t7,t0
-	move 	t0,t1
-	move 	t1,t7
-	sw	t0,4($fp)
-	sw	t1,8($fp)
+	move	a0,s1
+	move	a1,s2
+	jal	swap
 	#fin swap
 	j	while1
 
 qsortContinuation: #esta es la seccion que hace el swap y las llamadas recursivas
 	#inicio swap
-	move	t7,t1
-	lw	t4,60($fp)
-	move 	t1,t4
-	sw	t7,60($fp)
-	sw	t4,8($fp)
+	
+	move	a0,s3
+	move	a1,s2
+	jal	swap
 	#fin swap
 
 	#aca las 2 llamadas recursivas
-	addu	t3,t1,-1
+	move 	a0,s3
+	subu	t3,s2,4
 	move	a1,t3
 
-	la	t9,quickSort
-	jalr	t9
+	jal	quickSort
 
-	addu	t3,t1,1
+	add	t3,s2,4
 	move	a0,t3
-
-	la	t9,quickSort
-	jalr	t9
+	move	a1,s4
+	jal	quickSort
 
 qsortEnd:
 	#aca muere el qsort
@@ -107,7 +98,7 @@ qsortEnd:
 	lw	$fp,44(sp)
 	addu	sp,sp,56
 	j	ra
-	.end    quickSort
+	
 #-------------------------------Funcion es mayor---------------------------#	
 	.globl esMayor
 esMayor:
@@ -123,10 +114,10 @@ esMayor:
 	lw 	t0,48($fp)
 	lw 	t1,52($fp)
 	
-	sw	t0,8($fp)
-	sw 	zero,12($fp) #subindice para recorrer los string
-	sw	t1,16($fp)
-
+	sw	t0,4($fp)
+	sw	t1,8($fp)
+        sw 	zero,12($fp) #subindice para recorrer los string
+	
 	beq     a2,zero,esMayorChars
 	
 esMayorInt: #este castea a int y compara
@@ -148,7 +139,7 @@ esMayorInt: #este castea a int y compara
 	b	finEsMayor
 	
 esMayorChars:
-	lw 	t5,8($fp) #levanto en $t3 el char del primer string
+	lw 	t5,4($fp) #levanto en $t3 el char del primer string
 	lw 	t3,12($fp)
 	addu 	t3,t5,t3
 	lbu 	t3,0(t3) 
@@ -193,6 +184,7 @@ finEsMayor: #se llama cuando termina la comparacion (sea de ints o chars)
         lw      $fp,36(sp)
         addu    sp,sp,48
         jr      ra
+
 #-------------------------------Funcion es mayor---------------------------#
 #-------------------------------Funcion stringToInt---------------------------#
 stringToInt:
@@ -234,6 +226,7 @@ salir:
         addu    sp,sp,24
         jr      ra
 #-------------------------------Funcion stringToInt---------------------------#
+
 
 #calculo tamanio stack frame:
 #16 bytes de (ra+$fp+gp+4bytes align) + 16 bytes argument build area (es non leaf) + 8bytes unspecified + 16 bytes variables locales = 56bytes
