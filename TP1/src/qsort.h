@@ -36,14 +36,12 @@ void quicksort(char** izq, char** der, int num)
         {
             inf++;
             comp = esMayor(*inf,pivote, num);
-//            printf("comparando: %s con %s \n", *inf, pivote);
         }while(comp>0);
 
         do
         {
             sup--;
             comp = esMayor(pivote,*sup, num);
-//            printf("comparando: %s con %s \n", pivote, *sup);
             if(sup==izq)
                 break;
         }while(comp>0);

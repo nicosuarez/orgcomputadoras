@@ -2,9 +2,6 @@
 
 	.globl	quickSort
 
-#izq = a0
-#der = a1
-#num = a2
 quickSort:
 	subu 	sp,sp,56 	#Armo stack de 56 bytes
 	sw 	s0,52(sp)
@@ -18,15 +15,14 @@ quickSort:
 	sw	gp,24(sp)	
 	move 	$fp,sp
 
-	sw      a0,56($fp)
-	sw      a1,60($fp)
-	sw      a2,64($fp)
+	sw      a0,56($fp) #izq
+	sw      a1,60($fp) #der
+	sw      a2,64($fp) #num
 
-	
 	bge 	a0,a1,fin_quickSort	# if(izq>=der)return;
-	lw	s0,0(a1)		# pivote = *der;
+	lw	s0,0(a1)		# pivot = *der;
 	move	s1,a1			# sup = der;
-	sub	s2,a0,4		#inf = izq-1;
+	sub	s2,a0,4			# inf = izq-1;
 
 	#guardo los 2 primeros registros pasados en temporales para usarlos despues
 	move	s3,a0
@@ -40,7 +36,7 @@ while2:			# do
 	lw 	a0,0(s2)
 	move 	a1,s0
 	beqz 	a2,comparacionChars1
-	jal 	esMayorInt	#comp = compNum(*inf,pivote);
+	jal 	esMayorInt	#comp = esMayor(*inf,pivot);
 	j    	salidaComparacion1
 
 comparacionChars1:
@@ -54,7 +50,7 @@ while3:			#do
 	move 	a0,s0
 	lw 	a1,0(s1)
 	beqz 	a2,comparacionChars2
-	jal 	esMayorInt	#comp = compNum(*inf,pivote);
+	jal 	esMayorInt	#comp = esMayor(*inf,pivot);
 	j    	salidaComparacion2
 	
 comparacionChars2:
@@ -94,10 +90,10 @@ fin_while1Cont:
 	jal 	quickSort	#quickSort(inf, der, num);			
 
 fin_quickSort:
-	move 	sp,$fp		#Tendria que salvar valores y etceteras
+	move 	sp,$fp		
 	lw 	s0,52(sp)
 	lw 	s1,48(sp)
-	lw 	s2,44(sp)
+	lw 	s2,44(sp)	#Salvo valores
 	lw 	s3,40(sp)
 	lw 	s4,36(sp)
 
