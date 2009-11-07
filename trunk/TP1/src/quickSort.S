@@ -78,6 +78,13 @@ fin_while1:
 	move 	a1,s4
 	jal  	swap	#swap(inf,der);
 	
+	beq 	s2,s1,increment	# if(inf==sup ) inf++
+	j	fin_while1Cont
+
+increment:
+	add	s2,s2,4
+
+fin_while1Cont:
 	move 	a0,s3
 	move 	a1,s1
 	jal 	quickSort	#quickSort(izq, sup, num);
