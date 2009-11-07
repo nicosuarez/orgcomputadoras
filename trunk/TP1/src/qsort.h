@@ -22,25 +22,44 @@ int esMayor (char* x, char* y, int num){
 
 void quicksort(char** izq, char** der, int num)
 {
-	if(der<izq) return;
-	char* pivot=*izq;
-	char** ult=der;
-	char** pri=izq;
+    char *pivote;
+    char **inf, **sup;
+    int comp;
+    if(izq >= der)
+        return;
+    pivote = *der;
+    sup = der;
+    inf = izq-1;
+    while(1)
+    {
+        do
+        {
+            inf++;
+            comp = esMayor(*inf,pivote, num);
+//            printf("comparando: %s con %s \n", *inf, pivote);
+        }while(comp>0);
 
-	while(pri<ult)
-	{
-		while(pri<ult+1 && !esMayor(*pri,pivot,num))
-			pri++;
-		while(ult>pri-1 && esMayor(*ult,pivot,num))
-			ult--;
-		if(pri<ult)
-			swap(pri,ult);
-	}
-	swap(izq,ult);
-//	int* puntUlt = ult - 1;
-	quicksort(izq,ult -1,num);
-//	puntUlt = ult + 1;
-	quicksort(ult + 1,der,num);
+        do
+        {
+            sup--;
+            comp = esMayor(pivote,*sup, num);
+//            printf("comparando: %s con %s \n", pivote, *sup);
+            if(sup==izq)
+                break;
+        }while(comp>0);
+        if(inf >= sup)
+            break;
+        swap(inf, sup);
+    }
+
+    swap(inf, der);
+
+    if (inf == sup){
+    	inf++;
+    }
+
+    quicksort(izq, sup, num);
+    quicksort(inf, der, num);
 }
 
 
