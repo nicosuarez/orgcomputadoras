@@ -60,40 +60,4 @@ void quicksort(char** izq, char** der, int num)
     quicksort(inf, der, num);
 }
 
-
-
-//int main(){
-//	int N = 7;
-//	char* array[N];
-//
-//	int i = 0;
-//	array[i++] = "1";
-//	array[i++] = "7";
-//	array[i++] = "8";
-//	array[i++] = "256";
-//	array[i++] = "5";
-//	array[i++] = "4";
-//	array[i++] = "10";
-//
-//	char** finArray = (array + N - 1);
-//	quicksort(array, finArray, 0);
-//
-//	printf("------------ Corriendo ordenado alfab�ticamente--------------  \n");
-//
-//	for (i = 0; i < N; i++){
-//		printf("%s \n", array[i]);
-//	}
-//
-//	printf("\n------------ Corriendo ordenado num�ricamente--------------  \n");
-//
-//	quicksort(array, finArray, 1);
-//
-//	for (i = 0; i < N; i++){
-//		printf("%s \n", array[i]);
-//	}
-//
-//	return 0;
-//}
-
-
 #endif
