@@ -134,14 +134,7 @@ int main(int argc, char* argv[]){
 		}
 		vector[i][j] = '\0';
 	}
-	printf("Antes de ordenar\n");
-	for(i=0; i<lineas; i++)
-	{
-		printf("%s\n", vector[i]);
-	}
-
 	quickSort(&vector[0], &vector[lineas-1], numeric);
-	printf("\nDespues de ordenar\n");
 	if(strcmp(fichero_salida, "-") != 0)
 	{
 		fdOutput = fopen(fichero_salida, "wt");

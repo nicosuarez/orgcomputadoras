@@ -233,4 +233,29 @@ salir:
         lw      $fp,20(sp)
         addu    sp,sp,24
         jr      ra
-    	.end	stringToInt
+    	.end	stringToInt#-------------------------------Funcion swap---------------------------#
+	.globl swap
+	.ent	swap
+swap:
+	subu	sp,sp,24
+	sw	$fp,20(sp)
+	sw	gp,16(sp)
+	move	$fp,sp
+	sw	a0,24($fp)
+	sw	a1,28($fp)
+	lw	v0,24($fp)
+	lw	v0,0(v0)
+	sw	v0,8($fp)
+	lw	v1,24($fp)
+	lw	v0,28($fp)
+	lw	v0,0(v0)
+	sw	v0,0(v1)
+	lw	v1,28($fp)
+	lw	v0,8($fp)
+	sw	v0,0(v1)
+	move	sp,$fp
+	lw	$fp,20(sp)
+	addu	sp,sp,24
+	j	ra
+	.end	swap
+
