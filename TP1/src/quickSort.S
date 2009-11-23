@@ -1,9 +1,12 @@
 #include <mips/regdef.h>
 
 	.globl	quickSort
+	.ent quickSort
 
 quickSort:
+	.frame	$fp,56,ra
 	subu 	sp,sp,56 	#Armo stack de 56 bytes
+	.cprestore 24
 	sw 	s0,52(sp)
 	sw 	s1,48(sp)	#Guardo registros save en el stack
 	sw      s2,44(sp)
@@ -12,7 +15,7 @@ quickSort:
 
 	sw 	ra,32(sp)
 	sw 	$fp,28(sp)
-	sw	gp,24(sp)	
+	sw	gp,24(sp)
 	move 	$fp,sp
 
 	sw      a0,56($fp) #izq
@@ -29,10 +32,10 @@ quickSort:
 	move	s4,a1
 
 while1:			#while(1)
-		
+
 while2:			# do
 	add	s2,s2,4			#++inf;
-							
+
 	lw 	a0,0(s2)
 	move 	a1,s0
 	beqz 	a2,comparacionChars1
@@ -46,13 +49,13 @@ salidaComparacion1:
 
 while3:			#do
 	subu	s1,s1,4			#--sup;
-				
+
 	move 	a0,s0
 	lw 	a1,0(s1)
 	beqz 	a2,comparacionChars2
 	jal 	esMayorInt	#comp = esMayor(*inf,pivot);
 	j    	salidaComparacion2
-	
+
 comparacionChars2:
 	jal	esMayorChar
 
@@ -61,9 +64,9 @@ salidaComparacion2:
 	bnez	v0,while3		#while(comp)
 
 fin_while3:
-		
+
 	bge 	s2,s1,fin_while1	# if(inf>=sup ) break;
-		
+
 	move 	a0,s2
 	move 	a1,s1
 	jal  	swap	#swap(inf,sup);
@@ -73,7 +76,7 @@ fin_while1:
 	move 	a0,s2
 	move 	a1,s4
 	jal  	swap	#swap(inf,der);
-	
+
 	beq 	s2,s1,increment	# if(inf==sup ) inf++
 	j	fin_while1Cont
 
@@ -84,13 +87,13 @@ fin_while1Cont:
 	move 	a0,s3
 	move 	a1,s1
 	jal 	quickSort	#quickSort(izq, sup, num);
-	
+
 	move 	a0,s2
 	move 	a1,s4
-	jal 	quickSort	#quickSort(inf, der, num);			
+	jal 	quickSort	#quickSort(inf, der, num);
 
 fin_quickSort:
-	move 	sp,$fp		
+	move 	sp,$fp
 	lw 	s0,52(sp)
 	lw 	s1,48(sp)
 	lw 	s2,44(sp)	#Salvo valores
@@ -103,7 +106,7 @@ fin_quickSort:
 
 	addu 	sp, sp,56
 	j	ra
-	
+	.end quickSort
 #-------------------------------Funcion esMayorChar---------------------------#
 	.globl  esMayorChar
 	.ent	esMayorChar
@@ -164,7 +167,9 @@ finEsMayor:
 	.globl  esMayorInt
 	.ent	esMayorInt
 esMayorInt:
+	.frame	$fp,48,ra
 	subu	sp,sp,48
+	.cprestore 32
 	sw	ra,40(sp)
 	sw	$fp,36(sp)
 	sw	gp,32(sp)
