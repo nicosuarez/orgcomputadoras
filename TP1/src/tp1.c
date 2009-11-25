@@ -121,7 +121,6 @@ int main(int argc, char* argv[]){
 	/*Recorro de a una las lineas del archivo y las copio en un vector*/
 	char** vector = (char**)malloc(sizeof(char*)*lineas);
 	fseek(fdInput, 0, SEEK_SET);
-	//for(i=0; i<lineas; i++)
 	i=0;
 	while (!feof(fdInput))
 	{
