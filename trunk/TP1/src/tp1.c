@@ -121,18 +121,27 @@ int main(int argc, char* argv[]){
 	/*Recorro de a una las lineas del archivo y las copio en un vector*/
 	char** vector = (char**)malloc(sizeof(char*)*lineas);
 	fseek(fdInput, 0, SEEK_SET);
-	for(i=0; i<lineas; i++)
+	//for(i=0; i<lineas; i++)
+	i=0;
+	while (!feof(fdInput))
 	{
-		vector[i] = (char*)malloc(sizeof(char)*MAX);
-		buffer= (char)fgetc(fdInput);
-		j=0;
-		while(buffer != '\n' && j<MAX-1)
+		buffer = (char)fgetc(fdInput);
+		if(buffer != '\n' && buffer != EOF)
 		{
-			vector[i][j] = buffer;
-			buffer= (char)fgetc(fdInput);
-			j++;
+			vector[i] = (char*)malloc(sizeof(char)*MAX);
+			j=0;
+			while(buffer != '\n' && j<MAX-1)
+			{
+				if(buffer != '\t' && buffer != ' ')
+				{
+					vector[i][j] = buffer;
+					j++;
+				}
+				buffer= (char)fgetc(fdInput);
+			}
+			vector[i][j] = '\0';
+			i++;
 		}
-		vector[i][j] = '\0';
 	}
 	quickSort(&vector[0], &vector[lineas-1], numeric);
 	if(strcmp(fichero_salida, "-") != 0)

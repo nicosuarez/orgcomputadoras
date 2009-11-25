@@ -1,63 +1,6 @@
-#ifndef __QSORT_H__
-#define __QSORT_H__
+#ifndef QSORT_H_
+#define QSORT_H_
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+void quickSort(char** izq, char** der, int num);
 
-void swap(char** a, char** b)
-{
-	char* temp=*a;
-	*a=*b;
-	*b=temp;
-}
-
-int esMayor (char* x, char* y, int num){
-	if (num){
-		return atoi(x) > atoi(y);
-	} else {
-		return strcmp(x , y) > 0;
-	}
-}
-
-void quicksort(char** izq, char** der, int num)
-{
-    char *pivote;
-    char **inf, **sup;
-    int comp;
-    if(izq >= der)
-        return;
-    pivote = *der;
-    sup = der;
-    inf = izq-1;
-    while(1)
-    {
-        do
-        {
-            inf++;
-            comp = esMayor(*inf,pivote, num);
-        }while(comp>0);
-
-        do
-        {
-            sup--;
-            comp = esMayor(pivote,*sup, num);
-            if(sup==izq)
-                break;
-        }while(comp>0);
-        if(inf >= sup)
-            break;
-        swap(inf, sup);
-    }
-
-    swap(inf, der);
-
-    if (inf == sup){
-    	inf++;
-    }
-
-    quicksort(izq, sup, num);
-    quicksort(inf, der, num);
-}
-
-#endif
+#endif /* QSORT_H_ */

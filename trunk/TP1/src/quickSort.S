@@ -1,4 +1,5 @@
 #include <mips/regdef.h>
+#include <limits.h>
 
 	.globl	quickSort
 	.ent quickSort
@@ -36,8 +37,8 @@ while1:			#while(1)
 while2:			# do
 	add	s2,s2,4			#++inf;
 
-	lw 	a0,0(s2)
-	move 	a1,s0
+	lw 	a1,0(s2)
+	move 	a0,s0
 	beqz 	a2,comparacionChars1
 	jal 	esMayorInt	#comp = esMayor(*inf,pivot);
 	j    	salidaComparacion1
@@ -50,8 +51,8 @@ salidaComparacion1:
 while3:			#do
 	subu	s1,s1,4			#--sup;
 
-	move 	a0,s0
-	lw 	a1,0(s1)
+	move 	a1,s0
+	lw 	a0,0(s1)
 	beqz 	a2,comparacionChars2
 	jal 	esMayorInt	#comp = esMayor(*inf,pivot);
 	j    	salidaComparacion2
@@ -107,6 +108,7 @@ fin_quickSort:
 	addu 	sp, sp,56
 	j	ra
 	.end quickSort
+
 #-------------------------------Funcion esMayorChar---------------------------#
 	.globl  esMayorChar
 	.ent	esMayorChar
@@ -163,6 +165,7 @@ finEsMayor:
 	addu	sp,sp,32
 	j	ra
 	.end	esMayorChar
+
 #-------------------------------Funcion esMayorInt---------------------------#
 	.globl  esMayorInt
 	.ent	esMayorInt
@@ -197,30 +200,32 @@ esMayorInt:
 	addu	sp,sp,48
 	j	ra
 	.end	esMayorInt
+
 #-------------------------------Funcion stringToInt---------------------------#
 	.globl  stringToInt
 	.ent	stringToInt
 stringToInt:
-        subu    sp,sp,24
-        sw      $fp,20(sp)
-        sw      gp,16(sp)
+        subu    sp,sp,32
+        sw      $fp,28(sp)
+        sw      gp,24(sp)
         move    $fp,sp
-        sw      a0,24($fp)
+        sw      a0,32($fp)
         sw      zero,8($fp)
         sw      zero,12($fp)
+        sw      zero,16($fp)
 while:
-        lw      v1,24($fp)
+        lw      v1,32($fp)
         lw      v0,8($fp)
         addu    v0,v1,v0
         lb      v0,0(v0)
-        beq     v0,zero,salir
+        beq     v0,zero,finWhile
         lw      v1,12($fp)
         move    v0,v1
         sll     v0,v0,2   #multiplicacion por 10
         addu    v0,v0,v1
         sll     v0,v0,1
         sw      v0,12($fp)
-        lw      v1,24($fp)
+        lw      v1,32($fp)
         lw      v0,8($fp)
         addu    v0,v1,v0
         lb      v1,0(v0)
@@ -231,14 +236,29 @@ while:
         lw      v0,8($fp)
         addu    v0,v0,1
         sw      v0,8($fp)
+        lw		t0,12($fp)
+        bnez	t0,chequearOverflow
         b       while
+chequearOverflow:
+		lw		t0,16($fp)
+        li		t1,6
+        bge		t0,t1,overflow
+        addu	t0,t0,1
+        sw		t0,16($fp)
+        b		while
+overflow:
+		li 		v0, INT_MAX
+		b 		salir
+finWhile:
+		lw      v0,12($fp)
+		b 		salir
 salir:
-        lw      v0,12($fp)
         move    sp,$fp
-        lw      $fp,20(sp)
-        addu    sp,sp,24
+        lw      $fp,28(sp)
+        addu    sp,sp,32
         jr      ra
-    	.end	stringToInt#-------------------------------Funcion swap---------------------------#
+    	.end	stringToInt
+#-------------------------------Funcion swap---------------------------#
 	.globl swap
 	.ent	swap
 swap:
