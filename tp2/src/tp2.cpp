@@ -43,7 +43,7 @@ int main(int argc, char* argv[]){
 	register unsigned int k;
 	register unsigned int tamanioFor;
 		
-	char vector[tamanioCache][vias];
+	char vector[vias][tamanioCache];
 	
 //	for (i = 0; i < tamanioVector; i++){
 //		vector[i] = new char[vias];
@@ -54,13 +54,13 @@ int main(int argc, char* argv[]){
 	for (k = 0; k < 100; k++){		
 		for(i= 0; i< tamanioFor; i++){
 			for(j= 0; j< vias; j++){
-				vector[i * tamanioBloque][j]= 'a';
+				vector[j][i * tamanioBloque]= 'a';
 			}
 		}
 	}
 	
 	for(j= 0; j< vias; j++){
-		vector[0][j]= 'a';
+		vector[j][0]= 'a';
 	}
 	
 	
