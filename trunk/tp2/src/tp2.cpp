@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
 
 #define TAMANIO_BLOQUE "tamanioBloque"
 #define TAMANIO_CACHE "tamanioCache"
@@ -34,6 +35,13 @@ void replaceText(string &word, const string &toReplace, const string &replaceBy)
 		}
 		posToRepleace = word.find(toReplace);
 	}
+}
+
+string intToString( int entero )
+{
+    std::stringstream cadena("");
+    cadena << entero;
+    return cadena.str();
 }
 
 void parsearDatos(const string &funcion, long int &dr, long int &dw, long int &d1mr, long int &d1mw)
@@ -78,7 +86,7 @@ void parsearDatos(const string &funcion, long int &dr, long int &dw, long int &d
 	fileGrep.close();
 }
 
-void tamanioBloque(char *datosCache)
+int tamanioBloque(char *datosCache)
 {
 	string cachegrind(CACHEGRIND);
 	cachegrind.append(datosCache);
@@ -98,19 +106,59 @@ void tamanioBloque(char *datosCache)
 	fileFuente.append(".cpp:");
 	fileFuente.append(TAMANIO_BLOQUE);
 	parsearDatos(fileFuente, dr, dw, d1mr, d1mw);
-
+	int sizeBloque = 0;
 	if(dw>0  && d1mw>0)
-		std::cout << "Tamaño de bloque: " << dw/d1mw << " Bytes"<<std::endl;
+		sizeBloque = dw/d1mw;
 
 	remove(FILE_OUTPUT_CACHEGRIND);
 	remove(FILE_OUTPUT_CGANNOTATE);
 	remove(FILE_OUTPUT_GREP);
+	return sizeBloque;
+}
+
+int tamanioCache(char *datosCache, int tamanioBloque)
+{
+	int n = 128;
+	long int dr=0, dw=0, d1mr=0, d1mw=0;
+	while(d1mw < n)
+	{
+		n = n*2;
+		string cachegrind(CACHEGRIND);
+		cachegrind.append(datosCache);
+		cachegrind.append(" ./");
+		cachegrind.append(TAMANIO_CACHE);
+		cachegrind.append(" " + intToString(tamanioBloque) + " " + intToString(n));
+		system(cachegrind.c_str());
+
+		string cgannotate(CG_ANNOTATE);
+		cgannotate.append(TAMANIO_CACHE);
+		cgannotate.append(".cpp");
+		cgannotate.append(" > ");
+		cgannotate.append(FILE_OUTPUT_CGANNOTATE);
+		system(cgannotate.c_str());
+
+		string fileFuente(TAMANIO_CACHE);
+		fileFuente.append(".cpp:");
+		fileFuente.append(TAMANIO_CACHE);
+		parsearDatos(fileFuente, dr, dw, d1mr, d1mw);
+
+		remove(FILE_OUTPUT_CACHEGRIND);
+		remove(FILE_OUTPUT_CGANNOTATE);
+		remove(FILE_OUTPUT_GREP);
+	}
+	if(n==512)
+		n *= 2;
+	return (n/2 * tamanioBloque);
 }
 
 int main(int argc, char* argv[])
 {
 	if(argc==1)
 		return 1;
-	tamanioBloque(argv[1]);
+	int sizeBloque = 0, sizeCache = 0;
+	sizeBloque = tamanioBloque(argv[1]);
+	sizeCache = tamanioCache(argv[1], sizeBloque);
+	std::cout << "Tamaño de bloque: " << sizeBloque << " Bytes"<<std::endl;
+	std::cout << "Tamaño de cache: " << sizeCache << " Bytes"<<std::endl;
 	return 0;
 }
