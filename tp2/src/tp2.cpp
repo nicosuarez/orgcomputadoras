@@ -95,7 +95,8 @@ void parsearDatos(const string &funcion, long int &dr, long int &dw, long int &d
 int tamanioBloque(char *datosCache)
 {
 	string cachegrind(CACHEGRIND);
-	cachegrind.append(datosCache);
+	if(datosCache != NULL)
+		cachegrind.append(datosCache);
 	cachegrind.append(" ./");
 	cachegrind.append(TAMANIO_BLOQUE);
 	system(cachegrind.c_str());
@@ -126,7 +127,8 @@ int tamanioCache(char *datosCache, int tamanioBloque)
 	{
 		n = n*2;
 		string cachegrind(CACHEGRIND);
-		cachegrind.append(datosCache);
+		if(datosCache != NULL)
+			cachegrind.append(datosCache);
 		cachegrind.append(" ./");
 		cachegrind.append(TAMANIO_CACHE);
 		cachegrind.append(" " + intToString(tamanioBloque) + " " + intToString(n));
@@ -154,7 +156,8 @@ int cantidadVias(char *datosCache, int sizeCache, int sizeBloque)
 	while(d1mw == 0)
 	{
 		string cachegrind(CACHEGRIND);
-		cachegrind.append(datosCache);
+		if(datosCache != NULL)
+			cachegrind.append(datosCache);
 		cachegrind.append(" ./");
 		cachegrind.append(CANT_VIAS);
 		cachegrind.append(" " + intToString(n) + " " + intToString(sizeCache) + " " + intToString(sizeBloque));
@@ -176,12 +179,13 @@ int cantidadVias(char *datosCache, int sizeCache, int sizeBloque)
 
 int main(int argc, char* argv[])
 {
-	if(argc==1)
-		return 1;
 	int sizeBloque = 0, sizeCache = 0, vias = 0;
-	sizeBloque = tamanioBloque(argv[1]);
-	sizeCache = tamanioCache(argv[1], sizeBloque);
-	vias = cantidadVias(argv[1], sizeCache, sizeBloque);
+	char *datosCache = NULL;
+	if(argc > 1)
+		datosCache = argv[1];
+	sizeBloque = tamanioBloque(datosCache);
+	sizeCache = tamanioCache(datosCache, sizeBloque);
+	vias = cantidadVias(datosCache, sizeCache, sizeBloque);
 	remove(FILE_OUTPUT_VALGRIND);
 	remove(FILE_OUTPUT_CACHEGRIND);
 	remove(FILE_OUTPUT_CGANNOTATE);
