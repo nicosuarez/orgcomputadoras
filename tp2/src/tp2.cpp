@@ -6,11 +6,12 @@
 #define TAMANIO_BLOQUE "tamanioBloque"
 #define TAMANIO_CACHE "tamanioCache"
 #define CANT_VIAS "cantidadVias"
-#define CACHEGRIND  "valgrind --tool=cachegrind --cachegrind-out-file=salidaCachegrind "
-#define CG_ANNOTATE "cg_annotate --show=Dr,Dw,D1mr,D1mw salidaCachegrind "
+#define CACHEGRIND  "valgrind --tool=cachegrind --log-file=salidaValgrind --cachegrind-out-file=salidaCachegrind "
+#define CG_ANNOTATE "cg_annotate --auto=yes --show=Dr,Dw,D1mr,D1mw salidaCachegrind "
 #define FILE_OUTPUT_CACHEGRIND "salidaCachegrind"
 #define FILE_OUTPUT_CGANNOTATE "salidaCgannotate"
 #define FILE_OUTPUT_GREP "salidaGrep"
+#define FILE_OUTPUT_VALGRIND "salidaValgrind"
 #define SIZE_BUFFER 512
 
 using std::string;
@@ -52,13 +53,18 @@ void parsearDatos(const string &funcion, long int &dr, long int &dw, long int &d
 	fileGrep.open(FILE_OUTPUT_GREP);
 	if (!fileGrep.good())
 	{
-		std::cerr <<  "Error de lectura de archivo temporal" << std::endl;
+		std::cerr << "No se pudo parsear la salida del cachegrind\n" << std::endl;
 		return;
 	}
 	char buffer[SIZE_BUFFER];
+	memset(buffer, '\0',SIZE_BUFFER);
 	fileGrep.getline(buffer, SIZE_BUFFER);
+	if(strlen(buffer)==0)
+	{
+		fileGrep.close();
+		std::cerr << "No se pudo parsear la salida del cachegrind\n" << std::endl;
+	}
 	string word(buffer);
-
 	int posDesde = 0, posHasta = 0;
 	posDesde = word.find_first_not_of(" ", posDesde);
 	posHasta = word.find(" ", posDesde);
@@ -109,10 +115,6 @@ int tamanioBloque(char *datosCache)
 	int sizeBloque = 0;
 	if(dw>0  && d1mw>0)
 		sizeBloque = dw/d1mw;
-
-	remove(FILE_OUTPUT_CACHEGRIND);
-	remove(FILE_OUTPUT_CGANNOTATE);
-	remove(FILE_OUTPUT_GREP);
 	return sizeBloque;
 }
 
@@ -120,7 +122,7 @@ int tamanioCache(char *datosCache, int tamanioBloque)
 {
 	int n = 128;
 	long int dr=0, dw=0, d1mr=0, d1mw=0;
-	while(d1mw < n)
+	while(d1mw <= n)
 	{
 		n = n*2;
 		string cachegrind(CACHEGRIND);
@@ -141,24 +143,53 @@ int tamanioCache(char *datosCache, int tamanioBloque)
 		fileFuente.append(".cpp:");
 		fileFuente.append(TAMANIO_CACHE);
 		parsearDatos(fileFuente, dr, dw, d1mr, d1mw);
-
-		remove(FILE_OUTPUT_CACHEGRIND);
-		remove(FILE_OUTPUT_CGANNOTATE);
-		remove(FILE_OUTPUT_GREP);
 	}
-	if(n==512)
-		n *= 2;
 	return (n/2 * tamanioBloque);
+}
+
+int cantidadVias(char *datosCache, int sizeCache, int sizeBloque)
+{
+	int n = 1;
+	long int dr=0, dw=0, d1mr=0, d1mw=0;
+	while(d1mw == 0)
+	{
+		string cachegrind(CACHEGRIND);
+		cachegrind.append(datosCache);
+		cachegrind.append(" ./");
+		cachegrind.append(CANT_VIAS);
+		cachegrind.append(" " + intToString(n) + " " + intToString(sizeCache) + " " + intToString(sizeBloque));
+		system(cachegrind.c_str());
+
+		string cgannotate(CG_ANNOTATE);
+		cgannotate.append(CANT_VIAS);
+		cgannotate.append(".cpp");
+		cgannotate.append(" > ");
+		cgannotate.append(FILE_OUTPUT_CGANNOTATE);
+		system(cgannotate.c_str());
+
+		string fileFuente("'vector\\[j\\]\\[0\\]'");
+		parsearDatos(fileFuente, dr, dw, d1mr, d1mw);
+		n = n*2;
+	}
+	return (n/4);
 }
 
 int main(int argc, char* argv[])
 {
 	if(argc==1)
 		return 1;
-	int sizeBloque = 0, sizeCache = 0;
+	int sizeBloque = 0, sizeCache = 0, vias = 0;
 	sizeBloque = tamanioBloque(argv[1]);
 	sizeCache = tamanioCache(argv[1], sizeBloque);
-	std::cout << "Tamaño de bloque: " << sizeBloque << " Bytes"<<std::endl;
-	std::cout << "Tamaño de cache: " << sizeCache << " Bytes"<<std::endl;
+	vias = cantidadVias(argv[1], sizeCache, sizeBloque);
+	remove(FILE_OUTPUT_VALGRIND);
+	remove(FILE_OUTPUT_CACHEGRIND);
+	remove(FILE_OUTPUT_CGANNOTATE);
+	remove(FILE_OUTPUT_GREP);
+	std::cout << "Cache de datos L1:" << std::endl;
+	std::cout << "#Vias: " << vias << " Vias" << std::endl;
+	std::cout << "Tamaño: " << sizeCache << " Bytes"<< std::endl;
+	std::cout << "Tamaño de bloque: " << sizeBloque << " Bytes"<< std::endl;
+
 	return 0;
 }
