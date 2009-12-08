@@ -13,10 +13,7 @@ cantidadVias: cantidadVias.cpp
 	g++ -Wall -pedantic -O1 -g cantidadVias.cpp -o cantidadVias
 
 clean:
-	rm tamanioCache
-	rm tamanioBloque
-	rm cantidadVias
-	rm tp2
+	-rm -f tamanioCache tamanioBloque cantidadVias tp2
 
 
 
