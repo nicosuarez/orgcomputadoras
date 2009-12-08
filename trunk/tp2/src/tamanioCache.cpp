@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdlib.h>
 
 void tamanioCache(register int tamanioBloque, register int n, char *vector)
 {
