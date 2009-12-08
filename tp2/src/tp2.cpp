@@ -2,6 +2,9 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #define TAMANIO_BLOQUE "tamanioBloque"
 #define TAMANIO_CACHE "tamanioCache"
