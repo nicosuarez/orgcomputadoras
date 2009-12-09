@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <getopt.h>
 
 #define TAMANIO_BLOQUE "tamanioBloque"
 #define TAMANIO_CACHE "tamanioCache"
@@ -18,6 +19,23 @@
 #define SIZE_BUFFER 512
 
 using std::string;
+
+void imprime_uso (FILE *output){
+    fprintf(output, "Usage:\n");
+    fprintf(output, "	tp2 -h\n"
+           "	tp2 -V\n"
+           "	tp2 [Cache data]\n"
+           "Options:\n"
+    	   "	-h, --help	Imprime ayuda.\n"
+    	   "	-V, --version   Version del programa.\n"
+           "Examples:\n"
+    	   "	tp2 --D1=16384,2,64\n");
+}
+
+void imprime_version(){
+	printf("Version [66.20] Organizacion de Computadoras\n"
+		   "Segundo Cuatrimestre 2009\n");
+}
 
 void replaceText(string &word, const string &toReplace, const string &replaceBy)
 {
@@ -182,6 +200,52 @@ int cantidadVias(char *datosCache, int sizeCache, int sizeBloque)
 
 int main(int argc, char* argv[])
 {
+
+	int siguiente_opcion = 0;
+
+	/* Una cadena que lista las opciones cortas validas */
+	const char* const op_cortas = "hVd:" ;
+
+	/* Una estructura de varios arrays describiendo los valores largos */
+	const struct option op_largas[] =
+	{
+			{ "help",         0,  NULL,   'h'},
+			{ "version",       0,  NULL,   'V'},
+			{ "D1",       1,  NULL,   'd'},
+			{ NULL,           0,  NULL,   0  }
+	};
+
+	while (siguiente_opcion != -1)
+	{
+		/* Llamamos a la funcion getopt */
+		siguiente_opcion = getopt_long (argc, argv, op_cortas, op_largas, NULL);
+
+		switch (siguiente_opcion)
+		{
+			case 'h' : /* -h o --help */
+				imprime_uso(stdout);
+				exit(EXIT_SUCCESS);
+
+			case 'V' : /* -V o --version*/
+				imprime_version();
+				exit(EXIT_SUCCESS);
+
+			case 'd' : /* --D1 */
+				break;
+
+			case '?' : /* opcion no valida */
+				imprime_uso(stdout);
+				exit(EXIT_SUCCESS);
+
+			case -1 : /* No hay mas opciones */
+				break;
+
+			default : /* Algo mas? No esperado. Abortamos */
+				abort();
+			}
+	}
+
+
 	int sizeBloque = 0, sizeCache = 0, vias = 0;
 	char *datosCache = NULL;
 	if(argc > 1)
