@@ -20,7 +20,8 @@
 
 using std::string;
 
-void imprime_uso (FILE *output){
+void imprime_uso (FILE *output)
+{
     fprintf(output, "Usage:\n");
     fprintf(output, "	tp2 -h\n"
            "	tp2 -V\n"
@@ -32,9 +33,81 @@ void imprime_uso (FILE *output){
     	   "	tp2 --D1=16384,2,64\n");
 }
 
-void imprime_version(){
+void imprime_version()
+{
 	printf("Version [66.20] Organizacion de Computadoras\n"
 		   "Segundo Cuatrimestre 2009\n");
+}
+
+bool datosCacheValidos(char* datos)
+{
+	int i= 5;
+	char c;
+
+	c= datos[i];
+	while(c != ','){
+		if(c == '\0')
+			return false;
+
+		if((c == '0') || (c == '1') || (c == '2') || (c == '3') || (c == '4') || (c == '5')
+			 || (c == '6') || (c == '7') || (c == '8') || (c == '9'))
+		{
+			i++;
+			c= datos[i];
+		}
+		else{
+			return false;
+		}
+
+	}
+
+	i++;
+	c= datos[i];
+
+	while(c != ','){
+		if(c == '\0')
+			return false;
+
+		if((c == '0') || (c == '1') || (c == '2') || (c == '3') || (c == '4') || (c == '5')
+			 || (c == '6') || (c == '7') || (c == '8') || (c == '9'))
+		{
+			i++;
+			c= datos[i];
+		}
+		else{
+			return false;
+		}
+	}
+
+	i++;
+	c= datos[i];
+
+	if((c == '0') || (c == '1') || (c == '2') || (c == '3') || (c == '4') || (c == '5')
+			 || (c == '6') || (c == '7') || (c == '8') || (c == '9'))
+	{
+		i++;
+		c= datos[i];
+	}
+	else{
+		return false;
+	}
+
+
+
+	while(c != '\0'){
+
+		if((c == '0') || (c == '1') || (c == '2') || (c == '3') || (c == '4') || (c == '5')
+			 || (c == '6') || (c == '7') || (c == '8') || (c == '9'))
+		{
+			i++;
+			c= datos[i];
+		}
+		else{;
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void replaceText(string &word, const string &toReplace, const string &replaceBy)
@@ -231,6 +304,12 @@ int main(int argc, char* argv[])
 				exit(EXIT_SUCCESS);
 
 			case 'd' : /* --D1 */
+				bool datos;
+				datos= datosCacheValidos(argv[1]);
+				if(datos == false){
+					imprime_uso(stdout);
+					exit(EXIT_SUCCESS);
+				}
 				break;
 
 			case '?' : /* opcion no valida */
@@ -244,7 +323,6 @@ int main(int argc, char* argv[])
 				abort();
 			}
 	}
-
 
 	int sizeBloque = 0, sizeCache = 0, vias = 0;
 	char *datosCache = NULL;
