@@ -273,7 +273,7 @@ int cantidadVias(char *datosCache, int sizeCache, int sizeBloque)
 
 int main(int argc, char* argv[])
 {
-
+	char *datosCache = NULL;
 	int siguiente_opcion = 0;
 
 	/* Una cadena que lista las opciones cortas validas */
@@ -310,6 +310,7 @@ int main(int argc, char* argv[])
 					imprime_uso(stdout);
 					exit(EXIT_SUCCESS);
 				}
+				datosCache = argv[1];
 				break;
 
 			case '?' : /* opcion no valida */
@@ -325,9 +326,6 @@ int main(int argc, char* argv[])
 	}
 
 	int sizeBloque = 0, sizeCache = 0, vias = 0;
-	char *datosCache = NULL;
-	if(argc > 1)
-		datosCache = argv[1];
 	sizeBloque = tamanioBloque(datosCache);
 	sizeCache = tamanioCache(datosCache, sizeBloque);
 	vias = cantidadVias(datosCache, sizeCache, sizeBloque);
